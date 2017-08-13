@@ -47,11 +47,13 @@ class Door(object):
         self.time_to_open = config.get('time_to_open', 10)
         self.openhab_name = config.get('openhab_name')
         self.open_time = time.time()
+        # todo: update this with pigpio once the zero is setup
         gpio.setup(self.relay_pin, gpio.OUT)
         gpio.setup(self.state_pin, gpio.IN, pull_up_down=gpio.PUD_UP)
         gpio.output(self.relay_pin, True)
 
     def get_state(self):
+        # todo: update this with pigpio once the zero is setup
         if gpio.input(self.state_pin) == self.state_pin_closed_value:
             return 'closed'
         elif self.last_action == 'open':
@@ -78,13 +80,16 @@ class Door(object):
         else:
             self.last_action = None
             self.last_action_time = None
-
+            
+        # todo: update this with pigpio once the zero is setup
         gpio.output(self.relay_pin, False)
         time.sleep(0.2)
         gpio.output(self.relay_pin, True)
 
 class Controller(object):
     def __init__(self, config):
+
+        # todo: update this with pigpio once the zero is setup
         gpio.setwarnings(False)
         gpio.cleanup()
         gpio.setmode(gpio.BCM)
