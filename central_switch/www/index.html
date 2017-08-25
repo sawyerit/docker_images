@@ -1,32 +1,103 @@
-<html>
-  <head> 
-    <meta charset="utf-8" /> 
-    <title>My Garage Controller</title> 
-    <link rel="stylesheet" href="//code.jquery.com/mobile/1.2.1/jquery.mobile-1.2.1.min.css" />
-    <script src="//code.jquery.com/jquery-1.8.3.min.js"></script> 
-    <script src="//code.jquery.com/mobile/1.2.1/jquery.mobile-1.2.1.min.js"></script>
-    <script src="date.format.js"></script>    
-    <script src="client.js"></script>
-    <link rel="apple-touch-icon" href="img/closed.png" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <meta name="viewport" content="minimum-scale=1.0, width=device-width, maximum-scale=1.0, user-scalable=no"  />
-  </head> 
-  <body>
-    <div data-role="page">
-      <div data-role="header"> 
-	<h1>My Garage</h1>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="Central Switch access page">
+  <meta name="author" content="">
+  <link rel="icon" href="../../favicon.ico">
+
+  <title>centralswitch@centralstation</title>
+  <script src="//code.jquery.com/jquery-1.8.3.min.js"></script>
+  <script src="date.format.js"></script>
+  <script src="client.js"></script>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd"
+    crossorigin="anonymous">
+
+  <!-- Custom styles for this template -->
+  <link href="css/jumbotron-narrow.css" rel="stylesheet">
+  <link href="css/centralswitch.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+          <a class="navbar-brand" href="#"><img src="img/garage-icon.png" width="30" height="30" alt=""></a>
+          <div class="" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+              <a class="nav-item nav-link active" href="index.html">Home <span class="sr-only">(current)</span></a>
+              <a class="nav-item nav-link" href="#">Software</a>
+              <a class="nav-item nav-link" href="#">Hardware</a>
+              <a class="nav-item nav-link disabled" href="#">
+                <div id="host">Disabled</div>
+              </a>
+            </div>
+          </div>
+        </nav>
       </div>
-      <div data-role="content">
-	<div class="content-primary">
-	  <ul id="doorlist" data-role="listview"></ul>
-	</div>
+    </div>
+
+    <!-- jumbotron -->
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="jumbotron">
+          <h1>Central Switch @ Central Station v0.0.1</h1>
+          <p class="lead">beta version of the Pi automated home <br /> central switch access page</p>
+          <!-- <p><a class="btn btn-lg btn-success" href="#" role="button">Sign up today</a></p> -->
+        </div>
       </div>
-      <div data-role="footer" data-position="fixed">
-	<h4>
-	  <div id="uptime" />
-	</h4>
-      </div>	
-    </div>   
-  </body>
+    </div>
+    <!-- options -->
+    <div class="row">
+      <div class="col-sm-6 text-center">
+        <div class="navigate garage-page">
+          <img src="img/garage-icon.png" class="img-rounded" alt="Cinque Terre" width="75" height="75">
+          <h4>Garage</h4>
+        </div>
+      </div>
+      <div class="col-sm-6 text-center">
+        <div class="navigate cameras-page">
+          <img src="img/device-camera-icon.png" class="img-rounded" alt="Cinque Terre" width="75" height="75">
+          <h4>Cameras</h4>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6 text-center">
+        <div class="navigate lights-page">
+          <img src="img/lightbulb.png" class="img-rounded" alt="Cinque Terre" width="80" height="80">
+          <h4>Lights</h4>
+        </div>
+      </div>
+      <div class="col-sm-6 text-center">
+        <div class="navigate other-page">
+          <img src="img/wifi.gif" class="img-rounded" alt="Cinque Terre" width="70" height="70">
+          <h4>Other</h4>
+        </div>
+      </div>
+    </div>
+
+    <!-- footer -->
+    <div class="row">
+      <div class="col-sm-12">
+        <footer class="footer">
+          <div style="float:left;">&copy; 2016 SawyerIT</div>
+          <div style="float:right;" id="uptime">uptime should show here on linux</div>
+        </footer>
+      </div>
+    </div>
+
+  </div>
+  <!-- /container -->
+
+</body>
+
 </html>
