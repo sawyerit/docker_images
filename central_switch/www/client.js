@@ -12,6 +12,7 @@ garageclick = (name) => {
     });
 }
 
+// todo: find a better way to do this... templates? binding? react?
 $.ajax({
     url: "cfg",
     success: function (data) {
