@@ -3,7 +3,7 @@ Central Station - Software
 ======================
 
 Visit the main page for an introduction:
-[Central Station v0.1](readme.md)
+[Central Station v0.1](https://github.com/sawyerit/docker_images/tree/master/central_switch)
 
 
 
