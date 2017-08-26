@@ -306,7 +306,7 @@ class UptimeHandler(Resource):
         # uptime = uptime.split(",")[0].replace(",","").strip()
         # if (uptime == "up"):
         #     uptime = "0 mins"
-        return json.dumps("Uptime: " + uptime)
+        return json.dumps("Uptime: " + uptime_string)
     
 class UpdateHandler(Resource):
     isLeaf = True
