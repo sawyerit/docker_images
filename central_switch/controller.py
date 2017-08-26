@@ -39,10 +39,10 @@ class Door(object):
 
     def __init__(self, doorId, config):
         self.id = doorId
+        self.is_auto_door = config['auto_door'] == "True"
         self.name = config['name']
-        if hasattr(config, 'relay_pin'): #not needed for manual doors
-            self.relay_pin = config['relay_pin']
-
+        if getattr(config, "relay_pin", None):#not needed for man doors
+            self.relay_pin = config['relay_pin'] 
         self.state_pin = config['state_pin']
         self.state_pin_closed_value = config.get('state_pin_closed_value', 0)
         self.time_to_close = config.get('time_to_close', 10)
@@ -284,8 +284,7 @@ class ConfigHandler(Resource):
 
     def render(self, request):
         request.setHeader('Content-Type', 'application/json')
-        # todo: how is this loop through doors returned to the JS layer??
-        return json.dumps([(d.id, d.name, d.last_state, d.last_state_time)
+        return json.dumps([(d.id, d.name, d.last_state, d.last_state_time, d.is_auto_door)
                             for d in self.controller.doors])
 
 

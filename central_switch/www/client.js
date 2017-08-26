@@ -20,6 +20,7 @@ $.ajax({
             var name = data[i][1];
             var state = data[i][2];
             var time = data[i][3];
+            var autodoor = data[i][4];
             var nextState = state == 'open' ? 'close' : 'open';
             var btnState = state == 'open' ? 'btn-danger' : 'btn-success';
 
@@ -28,7 +29,7 @@ $.ajax({
             card = card + '<div class="card-block">';
             card = card + '<h4 class="card-title text-center">' + name + '</h4>';
             card = card + '<p class="card-text">' + formatState(state, time) + '</p>';
-            card = card + '<button id="' + id + '-door-button" type="button" class="btn ' + btnState + '" onclick="garageclick(\'' + id + '\')">' + nextState.toUpperCase() + '</a>';
+            card = card + '<button id="' + id + '-door-button" type="button" class="'+ ((autodoor) ? '' : 'dontshow') + ' btn ' + btnState + '" onclick="garageclick(\'' + id + '\')">' + nextState.toUpperCase() + '</a>';
             card = card + '</div></div>';
 
             $("#doorlist").append(card);
@@ -69,7 +70,7 @@ function poll() {
                 $("#" + id + " p").html(formatState(state, time));
                 $("#" + id + "-door").removeClass().addClass("garage " + state + "-garage");
                 let btn = $("#" + id + "-door-button")
-                btn.removeClass().addClass("btn " + btnState);
+                btn.removeClass("btn-danger btn-success").addClass("btn " + btnState);
                 btn.text(nextState.toUpperCase());
 
             }
