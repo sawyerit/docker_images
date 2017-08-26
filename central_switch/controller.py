@@ -2,7 +2,7 @@
 
 import time, syslog, uuid
 import smtplib
-import RPi.GPIO as gpio
+#import RPi.GPIO as gpio
 import json
 import httplib
 import urllib
@@ -40,7 +40,9 @@ class Door(object):
     def __init__(self, doorId, config):
         self.id = doorId
         self.name = config['name']
-        self.relay_pin = config['relay_pin']
+        if hasattr(config, 'relay_pin'): #not needed for manual doors
+            self.relay_pin = config['relay_pin']
+
         self.state_pin = config['state_pin']
         self.state_pin_closed_value = config.get('state_pin_closed_value', 0)
         self.time_to_close = config.get('time_to_close', 10)
@@ -48,13 +50,14 @@ class Door(object):
         self.openhab_name = config.get('openhab_name')
         self.open_time = time.time()
         # todo: update this with pigpio once the zero is setup
-        gpio.setup(self.relay_pin, gpio.OUT)
-        gpio.setup(self.state_pin, gpio.IN, pull_up_down=gpio.PUD_UP)
-        gpio.output(self.relay_pin, True)
+        #gpio.setup(self.relay_pin, gpio.OUT)
+        #gpio.setup(self.state_pin, gpio.IN, pull_up_down=gpio.PUD_UP)
+        #gpio.output(self.relay_pin, True)
 
     def get_state(self):
         # todo: update this with pigpio once the zero is setup
-        if gpio.input(self.state_pin) == self.state_pin_closed_value:
+        #if gpio.input(self.state_pin) == self.state_pin_closed_value:
+        if True == False:#todo replace this with the line above
             return 'closed'
         elif self.last_action == 'open':
             if time.time() - self.last_action_time >= self.time_to_open:
@@ -82,17 +85,17 @@ class Door(object):
             self.last_action_time = None
             
         # todo: update this with pigpio once the zero is setup
-        gpio.output(self.relay_pin, False)
+        #gpio.output(self.relay_pin, False)
         time.sleep(0.2)
-        gpio.output(self.relay_pin, True)
+        #gpio.output(self.relay_pin, True)
 
 class Controller(object):
     def __init__(self, config):
 
         # todo: update this with pigpio once the zero is setup
-        gpio.setwarnings(False)
-        gpio.cleanup()
-        gpio.setmode(gpio.BCM)
+        #gpio.setwarnings(False)
+        #gpio.cleanup()
+        #gpio.setmode(gpio.BCM)
         self.config = config
         self.doors = [Door(n, c) for (n, c) in config['doors'].items()]
         self.updateHandler = UpdateHandler(self)
@@ -218,6 +221,7 @@ class Controller(object):
     def get_updates(self, lastupdate):
         updates = []
         for d in self.doors:
+            # only fire an update ('upd') if there was a status update since the last check
             if d.last_state_time >= lastupdate:
                 updates.append((d.id, d.last_state, d.last_state_time))
         return updates
@@ -253,6 +257,7 @@ class ClickHandler(Resource):
         self.controller = controller
 
     def render(self, request):
+        print('clikd door')
         door = request.args['id'][0]
         self.controller.toggle(door)
         return 'OK'
@@ -279,7 +284,7 @@ class ConfigHandler(Resource):
 
     def render(self, request):
         request.setHeader('Content-Type', 'application/json')
-
+        # todo: how is this loop through doors returned to the JS layer??
         return json.dumps([(d.id, d.name, d.last_state, d.last_state_time)
                             for d in self.controller.doors])
 
@@ -291,11 +296,15 @@ class UptimeHandler(Resource):
 
     def render(self,request):
         request.setHeader('Content-Type', 'application/json')
-        uptime = subprocess.check_output(['uptime', '-p']).strip()
-        uptime = uptime.replace("up ", "")
-        uptime = uptime.split(",")[0].replace(",","").strip()
-        if (uptime == "up"):
-            uptime = "0 mins"
+
+        with open('/proc/uptime', 'r') as f:
+            uptime_seconds = float(f.readline().split()[0])
+            uptime_string = str(timedelta(seconds = uptime_seconds))
+        # uptime = subprocess.check_output(['uptime', '-p']).strip()
+        # uptime = uptime.replace("up ", "")
+        # uptime = uptime.split(",")[0].replace(",","").strip()
+        # if (uptime == "up"):
+        #     uptime = "0 mins"
         return json.dumps("Uptime: " + uptime)
     
 class UpdateHandler(Resource):
@@ -346,9 +355,10 @@ class UpdateHandler(Resource):
         # Can we accommodate this request now?
         updates = self.controller.get_updates(request.lastupdate)
         if updates != []:
+            print('doing the update')
             return self.format_updates(request, updates)
 
-
+        print('delaying request')
         request.notifyFinish().addErrback(lambda x: self.delayed_requests.remove(request))
         self.delayed_requests.append(request)
 
