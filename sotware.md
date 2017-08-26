@@ -1,16 +1,17 @@
 
-Central Station - monitor and control your home from the web w Raspberry Pi.
+Central Station - Software
 ======================
 
-Based on this awesome work by Andrew Shilliday
-[Garage Door Controller v1.1](https://github.com/andrewshilliday/garage-door-controller)
+Visit the main page for an introduction:
+[Central Station v0.1](readme.md)
+
 
 
 
 Overview:
 ---------
 
-This project provides software and hardware installation instructions for monitoring and controlling your house locally or remotely (via the web or a smart phone). The software is designed to run on a [Raspberry Pi](www.raspberrypi.org), and supports:
+Software instructions for monitoring your home:
 * Monitoring of the state of the garage doors (indicating whether they are open, closed, opening, or closing)
 * Remote control of the garage doors
 * Logging of all garage door activity (todo: via ifttt to google sheet??)
@@ -22,17 +23,6 @@ In future updates:
 Requirements for monitoring automatic garage doors:
 -----
 
-**Hardware**
-
-* [Raspberry Pi](http://www.raspberrypi.org)
-* [Raspberry Pi Zero W](https://www.adafruit.com/product/3410?gclid=CjwKCAjwuITNBRBFEiwA9N9YEDkpJEFu-aiiTHkML_k4NE2clFAz4Ujuy2McEmUvYHpdlutGi9NEHRoCkR4QAvD_BwE) 
-* Micro USB charger (1.5A preferable)
-* 8 GB micro SD Cards
-* Relay Module, 1 channel per garage door ([SainSmart](http://amzn.com/B0057OC6D8)
-* [Magnetic Contact Switches](https://www.amazon.com/Directed-Electronics-8601-Magnetic-Switch/dp/B0009SUF08) (one per door)
-* [Jumper wires](http://amzn.com/B007XPSVMY) (or you can just solder)
-* 2-conductor electrical wire
-
 **Software**
 
 * [Raspbian](http://www.raspbian.org/)
@@ -42,30 +32,8 @@ Requirements for monitoring automatic garage doors:
 * Pigpio remote gpio library
 * Bootstrap CSS & JQuery
 
-Hardware Setup:
-------
 
-*Step 1: Install the magnetic contact switches:*
-
-The contact switches are the sensors that the raspberry pi will use to recognize whether the garage doors are open or shut.  You need to install one on each door so that the switch is *closed* when the garage doors are closed.  Attach the end without wire hookups to the door itself, and the other end (the one that wires get attached to) to the frame of the door in such a way that they are next to each other when the garage door is shut.  There can be some space between them, but they should be close and aligned properly, like this:
-
-![Sample closed contact switch][3]
-
-*Step 2: Install the relays:*
-
-The relays are used to mimic a push button being pressed which will in turn cause your garage doors to open and shut.  Each relay channel is wired to the garage door opener identically to and in parallel with the existing push button wiring.  You'll want to consult your model's manual, or experiment with paper clips, but it should be wired somewhere around here:
-
-![!\[Wiring the garage door opener\]][4]
-    
-*Step 3: Wiring it all together*
-
-The following diagram illustrates how to wire up a two-door controller.  The program can accommodate fewer or additional garage doors (available GPIO pins permitting).
-
-![enter image description here][5]
-
-Note: User [@lamping7](https://github.com/lamping7) has kindly informed me that my wiring schematic is not good.  He warns that the relay should not be powered directly off of the Raspberry Pi.  See his explanation and proposed solution [here](https://github.com/andrewshilliday/garage-door-controller/issues/16).  That being said, I've been running my Raspberry Pi according to the above schematic for years now and I haven't yet fried anything or set fire to my house.  Your milage may vary.
-
-Software Installation:
+Software Installation: (todo)
 -----
 
 1. **Install [Raspbian](http://www.raspbian.org/) onto your Raspberry Pi**
@@ -117,21 +85,3 @@ Software Installation:
 The garage door controller application runs directly from the Raspberry Pi as a web service running on port 8080.  It can be used by directing a web browser (on a PC or mobile device) to http://[hostname-or-ip-address]:8080/.  If you want to connect to the raspberry pi from outside your home network, you will need to establish port forwarding in your cable modem.  
 <br>
 When the app is open in your web browser, it should display one entry for each garage door configured in your `config.json` file, along with the current status and timestamp from the time the status was last changed.  Click on any entry to open or close the door (each click will behave as if you pressed the garage button once).
-
-TODO:
-----------  
-This section contains the features I would like to add to the application, but do not currently have time for.  If someone would like to contribute changes or patches, I would be all to happy to incorporate them.
-
-* *Security*: Impose a configurable password on the web service.  Would need to discuss the best strategy (i.e., should we require the pw every time, or can the session persist on any given device which has authenticated).
-* *New Feature*: Add a "close all" button to the bottom of the page to close all doors that have a state other than "closed" or "closing"
-* *Configuration*: Make the port number a configuration option
-* *Occupancy sensors*: Add proximity sensors to check if car port is in use
-* *IFTTT Integration*: make a smooth secure way to call the door and get information online
-
-
-  [1]: http://i.imgur.com/rDx9YIt.png
-  [2]: http://i.imgur.com/bfjx9oy.png
-  [3]: http://i.imgur.com/vPHx7kF.png
-  [4]: http://i.imgur.com/AkNl6FI.jpg
-  [5]: http://i.imgur.com/48bpyG0.png
-  
