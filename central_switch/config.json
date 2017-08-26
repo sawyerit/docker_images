@@ -34,7 +34,8 @@
 	},
 	"doors": {
 		"main": {
-			"name": "MAIN",
+            "name": "MAIN",
+            "auto_door": "True",
 			"relay_pin": 23,
 			"state_pin": 17,
 			"state_pin_closed_value": 0,
@@ -42,8 +43,9 @@
 			"approx_time_to_open": 15,
 			"openhab_name": "main_door"
 		},
-		"mandoor": {
-			"name": "Back Door",
+		"garagebackdoor": {
+            "name": "Back Door",
+            "auto_door": "False",
 			"state_pin": 17,
 			"state_pin_closed_value": 0,
 			"openhab_name": "back_door"

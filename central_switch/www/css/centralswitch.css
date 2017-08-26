@@ -28,3 +28,7 @@
 .navigate {
   cursor: pointer;
 }
+
+.dontshow {
+  display: none;
+}
