@@ -49,3 +49,13 @@ Requirements for monitoring automatic garage doors:
 [Software Installation Instructions](https://github.com/sawyerit/docker_images/tree/master/central_switch/software.md)
 -----
 
+
+Todo:
+-----
+
+* -v flag and mount remote docker container
+* python syslog??
+* write door logs to gdrive via IFTTT?
+* wire up pi zero w and switch to opener
+* enable touchscreen on seperate PI for controlling items
+* Alexa skill to gt status of garage door
