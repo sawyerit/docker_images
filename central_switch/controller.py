@@ -268,6 +268,8 @@ class ClickHandler(Resource):
         if cur_doors:
             cur_door = cur_doors[0]
             # write the gdoor click event to the spreadsheet logger
+            # todo: this shows current state, not the state toggling TO.  Update this
+            # and create constants for the states
             garagelogger.write_to_ss([time.strftime("%H:%M:%S"), cur_door.id, \
                 cur_door.name, "click to " + cur_door.get_state()])
             # toggle the state of the door    
