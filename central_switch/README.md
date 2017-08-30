@@ -1,5 +1,5 @@
 
-Central Station - monitor and control your home from the web w Raspberry Pi.
+Central Station v0.1 - monitor and control your home from the web w Raspberry Pi.
 ======================
 
 Based on this awesome work by Andrew Shilliday
