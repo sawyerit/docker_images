@@ -55,7 +55,7 @@ Todo:
 
 * -v flag and mount remote docker container
 * python syslog??
-* write door logs to gdrive via IFTTT?
+* write door logs to gdrive spreadsheet - finish implementation 
 * wire up pi zero w and switch to opener
 * enable touchscreen on seperate PI for controlling items
 * Alexa skill to gt status of garage door

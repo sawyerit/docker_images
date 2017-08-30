@@ -8,6 +8,8 @@ import httplib
 import urllib
 import subprocess
 
+from spreadsheet import SpreadsheetLogger
+
 from datetime import timedelta
 
 from twisted.internet import task
@@ -72,7 +74,7 @@ class Door(object):
             else:
                 return 'closing'
         else:
-            return 'open'
+            return 'open'       
 
     def toggle_relay(self):
         state = self.get_state()
@@ -228,6 +230,9 @@ class Controller(object):
                 updates.append((d.id, d.last_state, d.last_state_time))
         return updates
 
+    def get_door_byid(self, doorid):
+        return filter(lambda x: x.id == doorid, self.doors) 
+
     def run(self):
         task.LoopingCall(self.status_check).start(0.5)
         root = File('www')
@@ -259,10 +264,17 @@ class ClickHandler(Resource):
         self.controller = controller
 
     def render(self, request):
-        print('clikd door')
-        door = request.args['id'][0]
-        self.controller.toggle(door)
-        return 'OK'
+        cur_doors = controller.get_door_byid(request.args['id'][0])
+        if cur_doors:
+            cur_door = cur_doors[0]
+            # write the gdoor click event to the spreadsheet logger
+            garagelogger.write_to_ss([time.strftime("%H:%M:%S"), cur_door.id, \
+                cur_door.name, "click to " + cur_door.get_state()])
+            # toggle the state of the door    
+            self.controller.toggle(cur_door.id)
+            return 'OK'
+        else:
+            return 'NOT FOUND' # todo: return something valid here
 
 class StatusHandler(Resource):
     isLeaf = True
@@ -397,7 +409,14 @@ def elapsed_time(seconds, suffixes=['y','w','d','h','m','s'], add_s=False, separ
     return separator.join(time)
 
 if __name__ == '__main__':
-    syslog.openlog('garage_controller')
+    # Setup spreadsheet loggers for writing to google drive
+    centrallogger = SpreadsheetLogger("Logging", "CentralSwitch")
+    garagelogger = SpreadsheetLogger("Logging", "GarageDoors")
+    
+    # write initialization to the spreadsheet
+    centrallogger.write_to_ss([time.strftime("%H:%M:%S"), "CentralStation", "server started"])
+    
+    # configure and run the site
     config_file = open('config.json')
     controller = Controller(json.load(config_file))
     config_file.close()
