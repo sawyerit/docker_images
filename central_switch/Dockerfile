@@ -1,12 +1,12 @@
 FROM alexellis2/python-gpio-flask:v6
 
-ADD controller.py ./
-ADD config.json ./
-ADD spreadsheet.py ./
-ADD client_secret.json ./
+#ADD controller.py ./
+#ADD config.json ./
+#ADD spreadsheet.py ./
+#ADD client_secret.json ./
 
-RUN mkdir /www  
-COPY www /www
+#RUN mkdir /www  
+#COPY www /www
 
 EXPOSE 8000
 
