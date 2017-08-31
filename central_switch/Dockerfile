@@ -9,7 +9,7 @@ FROM alexellis2/python-gpio-flask:v6
 #COPY www /www
 
 EXPOSE 8000
-
+WORKDIR /root
 
 # RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
 # USER docker
