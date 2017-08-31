@@ -270,7 +270,7 @@ class ClickHandler(Resource):
             # write the gdoor click event to the spreadsheet logger
             # todo: this shows current state, not the state toggling TO.  Update this
             # and create constants for the states
-            garagelogger.write_to_ss([time.strftime("%H:%M:%S"), cur_door.id, \
+            garagelogger.write_to_ss([cur_door.id, \
                 cur_door.name, "click to " + cur_door.get_state()])
             # toggle the state of the door    
             self.controller.toggle(cur_door.id)
@@ -416,7 +416,7 @@ if __name__ == '__main__':
     garagelogger = SpreadsheetLogger("Logging", "GarageDoors")
     
     # write initialization to the spreadsheet
-    centrallogger.write_to_ss([time.strftime("%H:%M:%S"), "CentralStation", "server started"])
+    centrallogger.write_to_ss(["CentralStation", "server started"])
     
     # configure and run the site
     config_file = open('config.json')

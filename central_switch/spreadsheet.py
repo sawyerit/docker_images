@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -18,6 +19,9 @@ class SpreadsheetLogger(object):
 
     def write_to_ss(self, row_data):
         if self.sheet:
+            #get the time and add it to the row values
+            now_mtn = datetime.now() + timedelta(hours=-6)
+            row_data.insert(0, str(now_mtn))
             self.sheet.append_row(row_data)
         else:
             print("WARNING: Could not find workbook %s sheet %s" % (self.spreadsheet_name, self.worksheet_name))
