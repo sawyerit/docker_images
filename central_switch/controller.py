@@ -1,4 +1,4 @@
-"""Software to monitor and control garage doors via a raspberry pi."""
+"""Software to monitor and control your home via a raspberry pi."""
 
 import time, syslog, uuid
 import smtplib
@@ -8,7 +8,7 @@ import httplib
 import urllib
 import subprocess
 
-from spreadsheet import SpreadsheetLogger
+from logger import CSLogger
 
 from datetime import timedelta
 
@@ -109,6 +109,7 @@ class Controller(object):
 
         self.use_alerts = config['config']['use_alerts']
         self.alert_type = config['alerts']['alert_type']
+        self.use_gdrive = config['config']['use_gdrive']
         self.ttw = config['alerts']['time_to_wait']
         if self.alert_type == 'smtp':
             self.use_smtp = False
@@ -270,7 +271,7 @@ class ClickHandler(Resource):
             # write the gdoor click event to the spreadsheet logger
             # todo: this shows current state, not the state toggling TO.  Update this
             # and create constants for the states
-            garagelogger.write_to_ss([cur_door.id, \
+            garagelogger.log([cur_door.id, \
                 cur_door.name, "click to " + cur_door.get_state()])
             # toggle the state of the door    
             self.controller.toggle(cur_door.id)
@@ -410,16 +411,18 @@ def elapsed_time(seconds, suffixes=['y','w','d','h','m','s'], add_s=False, separ
 
     return separator.join(time)
 
+
 if __name__ == '__main__':
-    # Setup spreadsheet loggers for writing to google drive
-    centrallogger = SpreadsheetLogger("Logging", "CentralSwitch")
-    garagelogger = SpreadsheetLogger("Logging", "GarageDoors")
-    
-    # write initialization to the spreadsheet
-    centrallogger.write_to_ss(["CentralStation", "server started"])
-    
     # configure and run the site
     config_file = open('config.json')
     controller = Controller(json.load(config_file))
     config_file.close()
+
+    # Setup loggers for writing to google drive
+    serverlogger = CSLogger(controller.use_gdrive, "Logging", "CentralSwitch")
+    garagelogger = CSLogger(controller.use_gdrive, "Logging", "GarageDoors")
+    
+    # write initialization to the spreadsheet
+    serverlogger.log(["CentralStation", "server started"])
+    
     controller.run()

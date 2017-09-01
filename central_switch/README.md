@@ -56,5 +56,5 @@ Todo:
 * write door logs to gdrive spreadsheet - finish implementation of all logging 
 * breadboard POC the switch and controller, remote GPIO code
 * wire up pi zero w and switch to opener
-* Alexa skill to gt status of garage door
+* Alexa skill to get status of garage door
 * enable touchscreen on seperate PI for controlling items
