@@ -53,8 +53,8 @@ Requirements for monitoring automatic garage doors:
 Todo:
 -----
 
-* -v flag and mount remote docker container
-* write door logs to gdrive spreadsheet - finish implementation 
+* write door logs to gdrive spreadsheet - finish implementation of all logging 
+* breadboard POC the switch and controller, remote GPIO code
 * wire up pi zero w and switch to opener
-* enable touchscreen on seperate PI for controlling items
 * Alexa skill to gt status of garage door
+* enable touchscreen on seperate PI for controlling items
