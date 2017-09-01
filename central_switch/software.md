@@ -93,9 +93,9 @@ Code explanation:
 todo: explain fundamentals of the idea for central_switch
 
 **Writing logs to google spreadsheet**
-`spreadsheet.py` - handles connecting to google drive using oauth setup.
+`logger.py` - handles logging for the application. If the config value use_gdrive == true, then the logger will connect to google drive using oauth setup.
 Each logger can specify a spreadsheet tab. (note: tab must exist and all empty rows removed for now)
-https://www.twilio.com/blog/2017/02/an-easy-way-to-read-and-write-to-a-google-spreadsheet-in-python.html
+[Tutorial I used for connecting to google drive with gspread](https://www.twilio.com/blog/2017/02/an-easy-way-to-read-and-write-to-a-google-spreadsheet-in-python.html)
 
 
 **Using the Controller Web Service**
