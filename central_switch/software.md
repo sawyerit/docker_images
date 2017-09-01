@@ -62,12 +62,9 @@ For both the RPi server and the RPI Zero W controller:
 4. **RPi Server Software**
 
     - Add Docker to your Pi
-    todo: explain the packages used, steps to get Docker on the Pi
-
-    - Clone or download the central_switch code**
-
-    - Edit `config.json`**
-    
+    [Great tutorial here](https://blog.alexellis.io/getting-started-with-docker-on-raspberry-pi/)
+    - Clone or download this central_switch docker code
+    - Edit `config.json`
     You'll need one configuration entry for each garage door.  The settings are fairly obvious, but are defined as follows:
     - **name**: The name for the garage door as it will appear on the controller app.
     - **relay_pin**: The GPIO pin connecting the RPi to the relay for that door.
@@ -80,9 +77,15 @@ For both the RPi server and the RPI Zero W controller:
     The **approx_time_to_XXX** options are not particularly crucial.  They tell the program when to shift from the opening or closing state to the "open" or "closed" state.  You don't need to be out there with a stopwatch and you wont break anything if they are off.  In the worst case, you may end up with a slightly odd behavior when closing the garage door whereby it goes from "closing" to "open" (briefly) and then to "closed" when the sensor detects that the door is actually closed.
 
         
-    - Build and Run the docker image**
-
-    todo: add docker commands
+    - Build and Run this docker image**
+        Other images can be [found here](https://github.com/alexellis/docker-arm/tree/master/images/armv6)
+        Build it from the central_switch directory: 
+        "$ docker build -t central_switch ."
+        Run it FROM code folder:
+        $ docker run --privileged -t --restart unless-stopped -d -v $PWD:/root -p 8000:8000 central_switch
+        --privleged: To access the GPIO pins the container must be run in priveledged mode.
+        --restart: The container will automatically restart unless manually stopped
+        -v: the container will mount the current dir as a volume and map it to /root on the Pi
     
 
 Code explanation:
