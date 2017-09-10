@@ -12,20 +12,23 @@ class CSLogger(object):
 
     def __init__(self, use_gdrive, ss_name, wksht_name):
         self.sheet = None
+        self.client = None
         
         if use_gdrive:
             self.spreadsheet_name = ss_name
             self.worksheet_name = wksht_name
 
-            scope = ['https://spreadsheets.google.com/feeds']
-            creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
-            client = gspread.authorize(creds)
+            self.scope = ['https://spreadsheets.google.com/feeds']
+            self.creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+            self.client = gspread.authorize(creds)
             try:
-                self.sheet = client.open(self.spreadsheet_name).worksheet(self.worksheet_name)
+                self.sheet = self.client.open(self.spreadsheet_name).worksheet(self.worksheet_name)
             except:
                 pass
 
     def log(self, row_data):
+        self.client.login() # call login again in case we have an expired session
+        
         #get the time and add it to the row values
         now_mtn = datetime.now() + timedelta(hours=-6)
         row_data.insert(0, str(now_mtn))

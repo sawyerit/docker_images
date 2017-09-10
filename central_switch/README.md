@@ -54,6 +54,9 @@ Todo:
 -----
 
 * write door logs to gdrive spreadsheet - finish implementation of all logging 
+* connection is not long-lived to spreadsheet, check auth each time before logging
+* dynamic dns on router for "static ip" (or run noip server on PI instead of messing w/router)
+* assign static ip's to the pi's
 * breadboard POC the switch and controller, remote GPIO code
 * wire up pi zero w and switch to opener
 * Alexa skill to get status of garage door
