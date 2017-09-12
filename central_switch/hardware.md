@@ -5,7 +5,8 @@ Central Station - Hardware
 Visit the main page for an introduction:
 [Central Station v0.1](https://github.com/sawyerit/docker_images/tree/master/central_switch)
 
-Based on this awesome work by Andrew Shilliday Garage Door Controller v1.1
+Based on this awesome work by Andrew Shilliday
+[Garage Door Controller v1.1](https://github.com/andrewshilliday/garage-door-controller)
 
 Overview:
 ---------
@@ -19,6 +20,7 @@ In future updates:
 * Controlling lights, cameras or other devices (todo: in a plug and play fashion)
 
 TODO: update these instructions for the changes made in my setup
+-----
 
 Harwdare requirements:
 -----
