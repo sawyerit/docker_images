@@ -5,7 +5,7 @@ Central Station - Hardware
 Visit the main page for an introduction:
 [Central Station v0.1](https://github.com/sawyerit/docker_images/tree/master/central_switch)
 
-
+Based on this awesome work by Andrew Shilliday Garage Door Controller v1.1
 
 Overview:
 ---------
@@ -17,6 +17,8 @@ Hardware instructions for monitoring your automatic garage doors.  This project 
 In future updates:
 * Monitoring man doors of your house
 * Controlling lights, cameras or other devices (todo: in a plug and play fashion)
+
+TODO: update these instructions for the changes made in my setup
 
 Harwdare requirements:
 -----
