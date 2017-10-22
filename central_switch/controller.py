@@ -23,6 +23,9 @@ from zope.interface import implements
 from twisted.cred import checkers, portal
 from twisted.web.guard import HTTPAuthSessionWrapper, BasicCredentialFactory
 
+SERVER_LOGGER = None
+GARAGE_LOGGER = None
+
 class HttpPasswordRealm(object):
     implements(portal.IRealm)
 
@@ -56,7 +59,7 @@ class Door(object):
         # setup garage remote pi
         self.remote_pi = pigpio.pi(self.door_ip)
         if self.remote_pi.connected:
-            garagelogger.log(["Controller", "connected to pi for door " + self.name])
+            GARAGE_LOGGER.log(["Controller", "connected to pi for door " + self.name])
 
         if self.relay_pin:
             self.remote_pi.set_mode(self.relay_pin, pigpio.OUTPUT)
@@ -285,7 +288,7 @@ class ClickHandler(Resource):
             # write the gdoor click event to the spreadsheet logger
             # todo: this shows current state, not the state toggling TO.  Update this
             # and create constants for the states
-            garagelogger.log([cur_door.id, \
+            GARAGE_LOGGER.log([cur_door.id, \
                 cur_door.name, "click to " + cur_door.get_state()])
             # toggle the state of the door    
             self.controller.toggle(cur_door.id)
@@ -432,13 +435,11 @@ if __name__ == '__main__':
     controller = Controller(json.load(config_file))
     config_file.close()
 
-    # Setup loggers for writing to google drive
-    global serverlogger
-    serverlogger = CSLogger(controller.use_gdrive, "Logging", "CentralSwitch")
-    global garagelogger
-    garagelogger = CSLogger(controller.use_gdrive, "Logging", "GarageDoors")
+    # Setup loggers for writing to google drive 
+    SERVER_LOGGER = CSLogger(controller.use_gdrive, "Logging", "CentralSwitch")
+    GARAGE_LOGGER = CSLogger(controller.use_gdrive, "Logging", "GarageDoors")
 
     # write initialization to the spreadsheet
-    serverlogger.log(["CentralStation", "server started"])
+    SERVER_LOGGER.log(["CentralStation", "server started"])
 
     controller.run()
