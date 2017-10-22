@@ -19,8 +19,8 @@ class CSLogger(object):
             self.worksheet_name = wksht_name
 
             self.scope = ['https://spreadsheets.google.com/feeds']
-            self.creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
-            self.client = gspread.authorize(creds)
+            self.creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', self.scope)
+            self.client = gspread.authorize(self.creds)
             try:
                 self.sheet = self.client.open(self.spreadsheet_name).worksheet(self.worksheet_name)
             except:
