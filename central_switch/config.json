@@ -3,8 +3,7 @@
 		"use_auth": true,
 		"use_alerts": false,
         "use_openhab": false,
-        "use_gdrive": true,
-        "garage_pi": "192.168.0.12"
+        "use_gdrive": true
 	},
 	"alerts": {
 		"time_to_wait": 10,
@@ -43,14 +42,16 @@
 			"state_pin_closed_value": 0,
 			"approx_time_to_close": 15,
 			"approx_time_to_open": 15,
-			"openhab_name": "main_door"
+			"openhab_name": "main_door",
+            "pi_ip": "192.168.0.12"
 		},
 		"garagebackdoor": {
             "name": "Back Door",
             "auto_door": "False",
 			"state_pin": 17,
 			"state_pin_closed_value": 0,
-			"openhab_name": "back_door"
+			"openhab_name": "back_door",
+            "pi_ip": "192.168.0.12"
 		}
 	}
 }

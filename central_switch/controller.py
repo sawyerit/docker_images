@@ -45,7 +45,7 @@ class Door(object):
     def __init__(self, doorId, config):
         self.id = doorId
         self.is_auto_door = config['auto_door'] == "True"
-        self.door_ip = config['config']['pi_ip']
+        self.door_ip = config['pi_ip']
         self.name = config['name']
         self.relay_pin = config.get('relay_pin') 
         self.state_pin = config['state_pin']
