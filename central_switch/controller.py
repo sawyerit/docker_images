@@ -23,8 +23,6 @@ from zope.interface import implements
 from twisted.cred import checkers, portal
 from twisted.web.guard import HTTPAuthSessionWrapper, BasicCredentialFactory
 
-
-
 class HttpPasswordRealm(object):
     implements(portal.IRealm)
 
@@ -435,8 +433,8 @@ if __name__ == '__main__':
     config_file.close()
 
     # Setup loggers for writing to google drive
-    serverlogger = CSLogger(controller.use_gdrive, "Logging", "CentralSwitch")
-    garagelogger = CSLogger(controller.use_gdrive, "Logging", "GarageDoors")
+    global serverlogger = CSLogger(controller.use_gdrive, "Logging", "CentralSwitch")
+    global garagelogger = CSLogger(controller.use_gdrive, "Logging", "GarageDoors")
     
     # write initialization to the spreadsheet
     serverlogger.log(["CentralStation", "server started"])
