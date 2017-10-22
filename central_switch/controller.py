@@ -45,22 +45,22 @@ class Door(object):
         self.is_auto_door = config['auto_door'] == "True"
         self.door_ip = config['pi_ip']
         self.name = config['name']
-        self.relay_pin = config.get('relay_pin') 
+        self.relay_pin = config.get('relay_pin')
         self.state_pin = config['state_pin']
         self.state_pin_closed_value = config.get('state_pin_closed_value', 0)
         self.time_to_close = config.get('time_to_close', 10)
         self.time_to_open = config.get('time_to_open', 10)
         self.openhab_name = config.get('openhab_name')
         self.open_time = time.time()
-        
+
         # setup garage remote pi
         self.remote_pi = pigpio.pi(self.door_ip)
         if self.remote_pi.connected:
             garagelogger.log(["Controller", "connected to pi for door " + self.name])
 
-        if (self.relay_pin):
+        if self.relay_pin:
             self.remote_pi.set_mode(self.relay_pin, pigpio.OUTPUT)
-            self.remote_pi.write(self.relay_pin,1)            
+            self.remote_pi.write(self.relay_pin, 1)
         self.remote_pi.set_pull_up_down(self.state_pin, pigpio.PUD_UP)
 
         # todo: remove commented code once working
@@ -78,17 +78,17 @@ class Door(object):
                 return 'open'
             else:
                 return 'opening'
-        elif self.last_action ==  'close':
+        elif self.last_action == 'close':
             if time.time() - self.last_action_time >= self.time_to_close:
                 return 'open' # This state indicates a problem
             else:
                 return 'closing'
         else:
-            return 'open'       
+            return 'open'
 
     def toggle_relay(self):
         state = self.get_state()
-        if (state == 'open'):
+        if state == 'open':
             self.last_action = 'close'
             self.last_action_time = time.time()
         elif state == 'closed':
@@ -97,7 +97,7 @@ class Door(object):
         else:
             self.last_action = None
             self.last_action_time = None
-            
+
         # todo: remove commented code once working
         #gpio.output(self.relay_pin, False)
         self.remote_pi.write(self.relay_pin, 0)
@@ -433,9 +433,11 @@ if __name__ == '__main__':
     config_file.close()
 
     # Setup loggers for writing to google drive
-    global serverlogger = CSLogger(controller.use_gdrive, "Logging", "CentralSwitch")
-    global garagelogger = CSLogger(controller.use_gdrive, "Logging", "GarageDoors")
-    
+    global serverlogger
+    serverlogger = CSLogger(controller.use_gdrive, "Logging", "CentralSwitch")
+    global garagelogger
+    garagelogger = CSLogger(controller.use_gdrive, "Logging", "GarageDoors")
+
     # write initialization to the spreadsheet
     serverlogger.log(["CentralStation", "server started"])
 
