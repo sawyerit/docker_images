@@ -55,9 +55,9 @@ class Door(object):
         self.openhab_name = config.get('openhab_name')
         self.open_time = time.time()
         # todo: remove commented code once working
-        garage_pi.set_mode(self.relay_pin, pigpio.OUTPUT)
-        garage_pi.set_pull_up_down(self.state_pin, pigpio.PUD_UP)
-        garage_pi.write(self.relay_pin,1)
+        remote_pi.set_mode(self.relay_pin, pigpio.OUTPUT)
+        remote_pi.set_pull_up_down(self.state_pin, pigpio.PUD_UP)
+        remote_pi.write(self.relay_pin,1)
         #gpio.setup(self.relay_pin, gpio.OUT)
         #gpio.setup(self.state_pin, gpio.IN, pull_up_down=gpio.PUD_UP)
         #gpio.output(self.relay_pin, True)
@@ -65,7 +65,7 @@ class Door(object):
     def get_state(self):
         # todo: remove commented code once working
         #if gpio.input(self.state_pin) == self.state_pin_closed_value:
-        if garage_pi.read(self.state_pin) == self.state_pin_closed_value:
+        if remote_pi.read(self.state_pin) == self.state_pin_closed_value:
             return 'closed'
         elif self.last_action == 'open':
             if time.time() - self.last_action_time >= self.time_to_open:
@@ -94,20 +94,19 @@ class Door(object):
             
         # todo: remove commented code once working
         #gpio.output(self.relay_pin, False)
-        garage_pi.write(self.relay_pin, 0)
+        remote_pi.write(self.relay_pin, 0)
         time.sleep(0.2)
         #gpio.output(self.relay_pin, True)
-        garage_pi.write(self.relay_pin, 1)
+        remote_pi.write(self.relay_pin, 1)
 
 class Controller(object):
     def __init__(self, config):
-
         # todo: maybe don't need these for the remote pi board
         #gpio.setwarnings(False)
         #gpio.cleanup()
         #gpio.setmode(gpio.BCM)
         self.config = config
-        self.doors = [Door(n, c) for (n, c) in config['doors'].items()]
+        self.doors = [Door(n, c, r) for (n, c, r) in config['doors'].items()]
         self.updateHandler = UpdateHandler(self)
         for door in self.doors:
             door.last_state = 'unknown'
@@ -116,7 +115,7 @@ class Controller(object):
         self.use_alerts = config['config']['use_alerts']
         self.alert_type = config['alerts']['alert_type']
         self.use_gdrive = config['config']['use_gdrive']
-        self.garage_pi = config['config']['garage_pi']
+        self.garage_ip = config['config']['garage_pi']
         self.ttw = config['alerts']['time_to_wait']
         if self.alert_type == 'smtp':
             self.use_smtp = False
@@ -132,6 +131,7 @@ class Controller(object):
         else:
             self.alert_type = None
             syslog.syslog("No alerts configured")
+
 
     def status_check(self):
         for door in self.doors:
@@ -431,10 +431,10 @@ if __name__ == '__main__':
     
     # write initialization to the spreadsheet
     serverlogger.log(["CentralStation", "server started"])
-    
-    # connect to garage pi
-    garage_pi = pigpio.pi(controller.garage_pi)
-    if garage_pi.connected:
-        serverlogger.log(["CentralStation", "connected to garage"])
+
+    # setup garage remote pi
+    remote_pi = pigpio.pi(controller.garage_ip)
+    if remote_pi.connected:
+        garagelogger.log(["Controller", "connected to garage"])
 
     controller.run()
