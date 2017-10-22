@@ -23,8 +23,6 @@ from zope.interface import implements
 from twisted.cred import checkers, portal
 from twisted.web.guard import HTTPAuthSessionWrapper, BasicCredentialFactory
 
-SERVER_LOGGER = None
-GARAGE_LOGGER = None
 
 class HttpPasswordRealm(object):
     implements(portal.IRealm)
@@ -43,7 +41,7 @@ class Door(object):
     msg_sent = False
     pb_iden = None
 
-    def __init__(self, doorId, config):
+    def __init__(self, doorId, config, glogger):
         self.id = doorId
         self.is_auto_door = config['auto_door'] == "True"
         self.door_ip = config['pi_ip']
@@ -59,7 +57,7 @@ class Door(object):
         # setup garage remote pi
         self.remote_pi = pigpio.pi(self.door_ip)
         if self.remote_pi.connected:
-            GARAGE_LOGGER.log(["Controller", "connected to pi for door " + self.name])
+            glogger.log(["Controller", "connected to pi for door " + self.name])
 
         if self.relay_pin:
             self.remote_pi.set_mode(self.relay_pin, pigpio.OUTPUT)
@@ -110,12 +108,19 @@ class Door(object):
 
 class Controller(object):
     def __init__(self, config):
+        # Setup loggers for writing to google drive 
+        self.use_gdrive = config['config']['use_gdrive']
+        self.server_logger = CSLogger(self.use_gdrive, "Logging", "CentralSwitch")
+        self.garage_logger = CSLogger(self.use_gdrive, "Logging", "GarageDoors")
+        # write initialization to the spreadsheet
+        self.server_logger.log(["CentralStation", "server controller started"])
+        
         # todo: maybe don't need these for the remote pi board
         #gpio.setwarnings(False)
         #gpio.cleanup()
         #gpio.setmode(gpio.BCM)
         self.config = config
-        self.doors = [Door(n, c) for (n, c) in config['doors'].items()]
+        self.doors = [Door(n, c, self.garage_logger) for (n, c) in config['doors'].items()]
         self.updateHandler = UpdateHandler(self)
         for door in self.doors:
             door.last_state = 'unknown'
@@ -123,7 +128,6 @@ class Controller(object):
 
         self.use_alerts = config['config']['use_alerts']
         self.alert_type = config['alerts']['alert_type']
-        self.use_gdrive = config['config']['use_gdrive']
         self.ttw = config['alerts']['time_to_wait']
         if self.alert_type == 'smtp':
             self.use_smtp = False
@@ -282,13 +286,13 @@ class ClickHandler(Resource):
         self.controller = controller
 
     def render(self, request):
-        cur_doors = controller.get_door_byid(request.args['id'][0])
+        cur_doors = self.controller.get_door_byid(request.args['id'][0])
         if cur_doors:
             cur_door = cur_doors[0]
             # write the gdoor click event to the spreadsheet logger
             # todo: this shows current state, not the state toggling TO.  Update this
             # and create constants for the states
-            GARAGE_LOGGER.log([cur_door.id, \
+            self.controller.garage_logger.log([cur_door.id, \
                 cur_door.name, "click to " + cur_door.get_state()])
             # toggle the state of the door    
             self.controller.toggle(cur_door.id)
@@ -434,12 +438,5 @@ if __name__ == '__main__':
     config_file = open('config.json')
     controller = Controller(json.load(config_file))
     config_file.close()
-
-    # Setup loggers for writing to google drive 
-    SERVER_LOGGER = CSLogger(controller.use_gdrive, "Logging", "CentralSwitch")
-    GARAGE_LOGGER = CSLogger(controller.use_gdrive, "Logging", "GarageDoors")
-
-    # write initialization to the spreadsheet
-    SERVER_LOGGER.log(["CentralStation", "server started"])
 
     controller.run()
