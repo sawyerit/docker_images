@@ -45,19 +45,27 @@ class Door(object):
     def __init__(self, doorId, config):
         self.id = doorId
         self.is_auto_door = config['auto_door'] == "True"
+        self.door_ip = config['config']['pi_ip']
         self.name = config['name']
-        if getattr(config, "relay_pin", None): # not needed for man doors
-            self.relay_pin = config['relay_pin'] 
+        self.relay_pin = config.get('relay_pin') 
         self.state_pin = config['state_pin']
         self.state_pin_closed_value = config.get('state_pin_closed_value', 0)
         self.time_to_close = config.get('time_to_close', 10)
         self.time_to_open = config.get('time_to_open', 10)
         self.openhab_name = config.get('openhab_name')
         self.open_time = time.time()
+        
+        # setup garage remote pi
+        self.remote_pi = pigpio.pi(self.door_ip)
+        if self.remote_pi.connected:
+            garagelogger.log(["Controller", "connected to pi for door " + self.name])
+
+        if (self.relay_pin):
+            self.remote_pi.set_mode(self.relay_pin, pigpio.OUTPUT)
+            self.remote_pi.write(self.relay_pin,1)            
+        self.remote_pi.set_pull_up_down(self.state_pin, pigpio.PUD_UP)
+
         # todo: remove commented code once working
-        remote_pi.set_mode(self.relay_pin, pigpio.OUTPUT)
-        remote_pi.set_pull_up_down(self.state_pin, pigpio.PUD_UP)
-        remote_pi.write(self.relay_pin,1)
         #gpio.setup(self.relay_pin, gpio.OUT)
         #gpio.setup(self.state_pin, gpio.IN, pull_up_down=gpio.PUD_UP)
         #gpio.output(self.relay_pin, True)
@@ -65,7 +73,7 @@ class Door(object):
     def get_state(self):
         # todo: remove commented code once working
         #if gpio.input(self.state_pin) == self.state_pin_closed_value:
-        if remote_pi.read(self.state_pin) == self.state_pin_closed_value:
+        if self.remote_pi.read(self.state_pin) == self.state_pin_closed_value:
             return 'closed'
         elif self.last_action == 'open':
             if time.time() - self.last_action_time >= self.time_to_open:
@@ -94,10 +102,10 @@ class Door(object):
             
         # todo: remove commented code once working
         #gpio.output(self.relay_pin, False)
-        remote_pi.write(self.relay_pin, 0)
+        self.remote_pi.write(self.relay_pin, 0)
         time.sleep(0.2)
         #gpio.output(self.relay_pin, True)
-        remote_pi.write(self.relay_pin, 1)
+        self.remote_pi.write(self.relay_pin, 1)
 
 class Controller(object):
     def __init__(self, config):
@@ -106,7 +114,7 @@ class Controller(object):
         #gpio.cleanup()
         #gpio.setmode(gpio.BCM)
         self.config = config
-        self.doors = [Door(n, c, r) for (n, c, r) in config['doors'].items()]
+        self.doors = [Door(n, c) for (n, c) in config['doors'].items()]
         self.updateHandler = UpdateHandler(self)
         for door in self.doors:
             door.last_state = 'unknown'
@@ -115,7 +123,6 @@ class Controller(object):
         self.use_alerts = config['config']['use_alerts']
         self.alert_type = config['alerts']['alert_type']
         self.use_gdrive = config['config']['use_gdrive']
-        self.garage_ip = config['config']['garage_pi']
         self.ttw = config['alerts']['time_to_wait']
         if self.alert_type == 'smtp':
             self.use_smtp = False
@@ -224,8 +231,9 @@ class Controller(object):
         conn.getresponse()
 
     def toggle(self, doorId):
+        # todo update to use the getdoorbyid method?
         for d in self.doors:
-            if d.id == doorId:
+            if d.id == doorId and d.auto_door == True:
                 syslog.syslog('%s: toggled' % d.name)
                 d.toggle_relay()
                 return
@@ -239,6 +247,7 @@ class Controller(object):
         return updates
 
     def get_door_byid(self, doorid):
+        # todo can this return a single element?
         return filter(lambda x: x.id == doorid, self.doors) 
 
     def run(self):
@@ -431,10 +440,5 @@ if __name__ == '__main__':
     
     # write initialization to the spreadsheet
     serverlogger.log(["CentralStation", "server started"])
-
-    # setup garage remote pi
-    remote_pi = pigpio.pi(controller.garage_ip)
-    if remote_pi.connected:
-        garagelogger.log(["Controller", "connected to garage"])
 
     controller.run()
