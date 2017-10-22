@@ -3,6 +3,7 @@
 import time, syslog, uuid
 import smtplib
 #import RPi.GPIO as gpio
+import pigpio
 import json
 import httplib
 import urllib
@@ -45,7 +46,7 @@ class Door(object):
         self.id = doorId
         self.is_auto_door = config['auto_door'] == "True"
         self.name = config['name']
-        if getattr(config, "relay_pin", None):#not needed for man doors
+        if getattr(config, "relay_pin", None): # not needed for man doors
             self.relay_pin = config['relay_pin'] 
         self.state_pin = config['state_pin']
         self.state_pin_closed_value = config.get('state_pin_closed_value', 0)
@@ -53,15 +54,18 @@ class Door(object):
         self.time_to_open = config.get('time_to_open', 10)
         self.openhab_name = config.get('openhab_name')
         self.open_time = time.time()
-        # todo: update this with pigpio once the zero is setup
+        # todo: remove commented code once working
+        garage_pi.set_mode(self.relay_pin, pigpio.OUTPUT)
+        garage_pi.set_pull_up_down(self.state_pin, pigpio.PUD_UP)
+        garage_pi.write(self.relay_pin,1)
         #gpio.setup(self.relay_pin, gpio.OUT)
         #gpio.setup(self.state_pin, gpio.IN, pull_up_down=gpio.PUD_UP)
         #gpio.output(self.relay_pin, True)
 
     def get_state(self):
-        # todo: update this with pigpio once the zero is setup
+        # todo: remove commented code once working
         #if gpio.input(self.state_pin) == self.state_pin_closed_value:
-        if True == False:#todo replace this with the line above
+        if garage_pi.read(self.state_pin) == self.state_pin_closed_value:
             return 'closed'
         elif self.last_action == 'open':
             if time.time() - self.last_action_time >= self.time_to_open:
@@ -88,15 +92,17 @@ class Door(object):
             self.last_action = None
             self.last_action_time = None
             
-        # todo: update this with pigpio once the zero is setup
+        # todo: remove commented code once working
         #gpio.output(self.relay_pin, False)
+        garage_pi.write(self.relay_pin, 0)
         time.sleep(0.2)
         #gpio.output(self.relay_pin, True)
+        garage_pi.write(self.relay_pin, 1)
 
 class Controller(object):
     def __init__(self, config):
 
-        # todo: update this with pigpio once the zero is setup
+        # todo: maybe don't need these for the remote pi board
         #gpio.setwarnings(False)
         #gpio.cleanup()
         #gpio.setmode(gpio.BCM)
@@ -110,6 +116,7 @@ class Controller(object):
         self.use_alerts = config['config']['use_alerts']
         self.alert_type = config['alerts']['alert_type']
         self.use_gdrive = config['config']['use_gdrive']
+        self.garage_pi = config['config']['garage_pi']
         self.ttw = config['alerts']['time_to_wait']
         if self.alert_type == 'smtp':
             self.use_smtp = False
@@ -316,6 +323,7 @@ class UptimeHandler(Resource):
         with open('/proc/uptime', 'r') as f:
             uptime_seconds = float(f.readline().split()[0])
             uptime_string = str(timedelta(seconds = uptime_seconds))
+        # todo maybe not needed
         # uptime = subprocess.check_output(['uptime', '-p']).strip()
         # uptime = uptime.replace("up ", "")
         # uptime = uptime.split(",")[0].replace(",","").strip()
@@ -365,7 +373,6 @@ class UpdateHandler(Resource):
             request.lastupdate = float(args['lastupdate'][0])
         else:
             request.lastupdate = 0
-
             #print "request received " + str(request.lastupdate)
 
         # Can we accommodate this request now?
@@ -425,4 +432,9 @@ if __name__ == '__main__':
     # write initialization to the spreadsheet
     serverlogger.log(["CentralStation", "server started"])
     
+    # connect to garage pi
+    garage_pi = pigpio.pi(controller.garage_pi)
+    if garage_pi.connected:
+        serverlogger.log(["CentralStation", "connected to garage"])
+
     controller.run()

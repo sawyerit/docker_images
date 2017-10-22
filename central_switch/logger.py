@@ -27,7 +27,7 @@ class CSLogger(object):
                 pass
 
     def log(self, row_data):
-        self.client.login() # call login again in case we have an expired session
+        self.client.login() # call login again "in case" we have an expired session
         
         #get the time and add it to the row values
         now_mtn = datetime.now() + timedelta(hours=-6)
