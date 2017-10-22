@@ -238,7 +238,7 @@ class Controller(object):
     def toggle(self, doorId):
         # todo update to use the getdoorbyid method?
         for d in self.doors:
-            if d.id == doorId and d.auto_door == True:
+            if d.id == doorId and d.is_auto_door == True:
                 syslog.syslog('%s: toggled' % d.name)
                 d.toggle_relay()
                 return
