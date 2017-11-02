@@ -1,18 +1,19 @@
+/*jshint esversion: 6 */
 var lastupdate = 0;
 
 function formatState(state, time) {
     dateStr = dateFormat(new Date(parseInt(time) * 1000), "mmm dS, yyyy, h:MM TT");
     return state.charAt(0).toUpperCase() + state.slice(1) + " as of " + dateStr;
-};
+}
 
 garageclick = (name) => {
     $.ajax({
         url: "clk",
         data: { 'id': name }
     });
-}
+};
 
-// todo: find a better way to do this... templates? binding? react?
+// todo: find a better way to do this... templates? binding? react? map?
 $.ajax({
     url: "cfg",
     success: function (data) {
@@ -30,7 +31,7 @@ $.ajax({
             card = card + '<div class="card-block">';
             card = card + '<h4 class="card-title text-center">' + name + '</h4>';
             card = card + '<p class="card-text">' + formatState(state, time) + '</p>';
-            card = card + '<button id="' + id + '-door-button" type="button" class="'+ ((autodoor) ? '' : 'dontshow') + ' btn ' + btnState + '" onclick="garageclick(\'' + id + '\')">' + nextState.toUpperCase() + '</a>';
+            card = card + '<button id="' + id + '-door-button" type="button" class="'+ ((autodoor) ? '' : 'dontshow') + ' btn ' + btnState + '" onclick="garageclick(\'' + id + '\')">Click to ' + nextState.toUpperCase() + '</a>';
             card = card + '</div></div>';
 
             $("#doorlist").append(card);
@@ -65,15 +66,12 @@ function poll() {
                 let id = response.update[i][0];
                 let state = response.update[i][1];
                 let time = response.update[i][2];
-                let btnState = state == 'open' ? 'btn-danger' : 'btn-success';
-                let nextState = state == 'open' ? 'close' : 'open';
+                let oppositeState = state == 'open' ? 'close' : 'open';
 
                 $("#" + id + " p").html(formatState(state, time));
                 $("#" + id + "-door").removeClass().addClass("garage " + state + "-garage");
-                let btn = $("#" + id + "-door-button")
-                btn.removeClass("btn-danger btn-success").addClass("btn " + btnState);
-                btn.text(nextState.toUpperCase());
-
+                let btn = $("#" + id + "-door-button");
+                btn.text(oppositeState.toUpperCase());
             }
             setTimeout(poll, 1000);
         },
