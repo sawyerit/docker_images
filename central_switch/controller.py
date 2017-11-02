@@ -42,6 +42,7 @@ class Door(object):
     pb_iden = None
 
     def __init__(self, doorId, config, glogger):
+        self.logger = glogger
         self.id = doorId
         self.is_auto_door = config['auto_door'] == "True"
         self.door_ip = config['pi_ip']
@@ -53,21 +54,15 @@ class Door(object):
         self.time_to_open = config.get('time_to_open', 10)
         self.openhab_name = config.get('openhab_name')
         self.open_time = time.time()
+        self.remote_connect_count = 0
 
-        # setup garage remote pi
-        self.remote_pi = pigpio.pi(self.door_ip)
-        if self.remote_pi.connected:
-            glogger.log(["Controller", "connected to pi for door " + self.name])
+        # setup garage remote pi, one for each door
+        self.connect_remote_pi()
 
         if self.relay_pin:
             self.remote_pi.set_mode(self.relay_pin, pigpio.OUTPUT)
             self.remote_pi.write(self.relay_pin, 1)
         self.remote_pi.set_pull_up_down(self.state_pin, pigpio.PUD_UP)
-
-        # todo: remove commented code once working
-        #gpio.setup(self.relay_pin, gpio.OUT)
-        #gpio.setup(self.state_pin, gpio.IN, pull_up_down=gpio.PUD_UP)
-        #gpio.output(self.relay_pin, True)
 
     def get_state(self):
         # todo: remove commented code once working
@@ -99,12 +94,23 @@ class Door(object):
             self.last_action = None
             self.last_action_time = None
 
-        # todo: remove commented code once working
-        #gpio.output(self.relay_pin, False)
         self.remote_pi.write(self.relay_pin, 0)
         time.sleep(0.2)
-        #gpio.output(self.relay_pin, True)
         self.remote_pi.write(self.relay_pin, 1)
+
+    # recursively try to connect to remote pi
+    # e.g. incase its not back up after a power failure
+    def connect_remote_pi(self):
+        self.remote_pi = pigpio.pi(self.door_ip)
+        if self.remote_pi.connected:
+            self.logger.log(["Controller", "connected to pi for door " + self.name])
+        else:
+            if self.remote_connect_count > 5:
+                self.remote_connect_count += 1
+                time.sleep(2*self.remote_connect_count)
+                self.connect_remote_pi()
+            else:
+                self.logger.log(["Controller", "could not connect to pi for door " + self.name])
 
 class Controller(object):
     def __init__(self, config):
@@ -112,20 +118,16 @@ class Controller(object):
         self.use_gdrive = config['config']['use_gdrive']
         self.server_logger = CSLogger(self.use_gdrive, "Logging", "CentralSwitch")
         self.garage_logger = CSLogger(self.use_gdrive, "Logging", "GarageDoors")
+        
         # write initialization to the spreadsheet
         self.server_logger.log(["CentralStation", "server controller started"])
-        
-        # todo: maybe don't need these for the remote pi board
-        #gpio.setwarnings(False)
-        #gpio.cleanup()
-        #gpio.setmode(gpio.BCM)
+        # setup the configuration
         self.config = config
         self.doors = [Door(n, c, self.garage_logger) for (n, c) in config['doors'].items()]
         self.updateHandler = UpdateHandler(self)
         for door in self.doors:
             door.last_state = 'unknown'
             door.last_state_time = time.time()
-
         self.use_alerts = config['config']['use_alerts']
         self.alert_type = config['alerts']['alert_type']
         self.ttw = config['alerts']['time_to_wait']
@@ -148,8 +150,8 @@ class Controller(object):
     def status_check(self):
         for door in self.doors:
             new_state = door.get_state()
-            if (door.last_state != new_state):
-                syslog.syslog('%s: %s => %s' % (door.name, door.last_state, new_state))
+            if door.last_state != new_state:
+                door.logger.log('%s: %s => %s' % (door.name, door.last_state, new_state))
                 door.last_state = new_state
                 door.last_state_time = time.time()
                 self.updateHandler.handle_updates()
@@ -170,7 +172,7 @@ class Controller(object):
 
             if new_state == 'closed':
                 if self.use_alerts:
-                    if door.msg_sent == True:
+                    if door.msg_sent:
                         title = "%s's garage doors closed" % door.name
                         etime = elapsed_time(int(time.time() - door.open_time))
                         message = "%s's garage door is now closed after %s "% (door.name, etime)
@@ -225,7 +227,7 @@ class Controller(object):
                     "user": config['user_key'],
                     "title": title,
                     "message": message,
-                }), { "Content-type": "application/x-www-form-urlencoded" })
+                }), {"Content-type": "application/x-www-form-urlencoded"})
         conn.getresponse()
 
     def update_openhab(self, item, state):
@@ -262,10 +264,10 @@ class Controller(object):
         root.putChild('upd', self.updateHandler)
         root.putChild('cfg', ConfigHandler(self))
         root.putChild('upt', UptimeHandler(self))
-        
+
         if self.config['config']['use_auth']:
             clk = ClickHandler(self)
-            args={self.config['site']['username']:self.config['site']['password']}
+            args = {self.config['site']['username']:self.config['site']['password']}
             checker = checkers.InMemoryUsernamePasswordDatabaseDontUse(**args)
             realm = HttpPasswordRealm(clk)
             p = portal.Portal(realm, [checker])
@@ -281,7 +283,7 @@ class Controller(object):
 class ClickHandler(Resource):
     isLeaf = True
 
-    def __init__ (self, controller):
+    def __init__(self, controller):
         Resource.__init__(self)
         self.controller = controller
 
@@ -289,12 +291,6 @@ class ClickHandler(Resource):
         cur_doors = self.controller.get_door_byid(request.args['id'][0])
         if cur_doors:
             cur_door = cur_doors[0]
-            # write the gdoor click event to the spreadsheet logger
-            # todo: this shows current state, not the state toggling TO.  Update this
-            # and create constants for the states
-            self.controller.garage_logger.log([cur_door.id, \
-                cur_door.name, "click to " + cur_door.get_state()])
-            # toggle the state of the door    
             self.controller.toggle(cur_door.id)
             return 'OK'
         else:
