@@ -151,7 +151,7 @@ class Controller(object):
         for door in self.doors:
             new_state = door.get_state()
             if door.last_state != new_state:
-                door.logger.log('%s: %s => %s' % (door.name, door.last_state, new_state))
+                door.logger.log(['%s', '%s', '%s => %s'] % (door.id, door.name, door.last_state, new_state))
                 door.last_state = new_state
                 door.last_state_time = time.time()
                 self.updateHandler.handle_updates()
