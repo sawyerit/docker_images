@@ -21,13 +21,13 @@ $.ajax({
             var nextState = door[2] == 'open' ? 'close' : 'open';
             var formattedState = formatState(door[2], door[3]);
 
-            return `<div id="${door[0]}" class="card text-center">';
-            <div class="card-header"><div id="${door[0]}-door" class="garage ${door[2]}-garage"></div></div>';
-            <div class="card-block">';
-            <h4 class="card-title text-center">${door[1]}</h4>';
-            <p class="card-text">${formattedState}</p>';
-            <button id="${door[0]}-door-button" type="button" class="${showhide} btn " onclick="garageclick('${door[0]}')">Click to ${nextState.toUpperCase()}</a>';
-            </div></div>;`;
+            return `<div id="${door[0]}" class="card text-center">
+            <div class="card-header"><div id="${door[0]}-door" class="garage ${door[2]}-garage"></div></div>
+            <div class="card-block">
+            <h4 class="card-title text-center">${door[1]}</h4>
+            <p class="card-text">${formattedState}</p>
+            <button id="${door[0]}-door-button" type="button" class="${showhide} btn " onclick="garageclick('${door[0]}')">Click to ${nextState.toUpperCase()}</a>;
+            </div></div>`;
         }));
 
         // for (var i = 0; i < data.length; i++) {
