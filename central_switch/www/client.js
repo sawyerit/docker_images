@@ -47,6 +47,19 @@ function uptime() {
     });
 }
 
+function info() {
+    $.ajax({
+        url: "inf",
+        success: function (data) {
+            $("#version").html(data);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#version").html(errorThrown);
+        },
+        dataType: "json"
+    });
+}
+
 function poll() {
     $.ajax({
         url: "upd",
@@ -92,7 +105,7 @@ setupNav = () => {
     $('.navigate.other-page').click(function () {
         window.location.href = 'other.html';
     });
-}
+};
 
 $(document).ready(() => {
     uptime();

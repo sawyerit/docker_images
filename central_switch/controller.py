@@ -113,6 +113,7 @@ class Door(object):
 class Controller(object):
     def __init__(self, config):
         # Setup loggers for writing to google drive 
+        self.version = config['config']['version']
         self.use_gdrive = config['config']['use_gdrive']
         self.server_logger = CSLogger(self.use_gdrive, "Logging", "CentralSwitch")
         self.garage_logger = CSLogger(self.use_gdrive, "Logging", "GarageDoors")
@@ -266,6 +267,7 @@ class Controller(object):
         root.putChild('upd', self.updateHandler)
         root.putChild('cfg', ConfigHandler(self))
         root.putChild('upt', UptimeHandler(self))
+        root.putChild('inf', InfoHandler(self))
 
         if self.config['config']['use_auth']:
             clk = ClickHandler(self)
@@ -310,6 +312,16 @@ class StatusHandler(Resource):
             if d.id == door:
                 return d.last_state
         return ''
+
+class InfoHandler(Resource):
+    isLeaf = True
+
+    def __init__(self, controller):
+        Resource.__init__(self)
+        self.controller = controller
+
+    def render(self, request):
+        return controller.version
 
 class ConfigHandler(Resource):
     isLeaf = True
