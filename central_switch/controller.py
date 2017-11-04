@@ -258,7 +258,8 @@ class Controller(object):
 
     def get_door_byid(self, doorid):
         # todo test this out
-        return next([x for x in self.doors if x.id == doorid], None)
+        it = iter(self.doors)
+        return next([x for x in it if x.id == doorid], None)
 
     def run(self):
         task.LoopingCall(self.status_check).start(0.5)
@@ -282,8 +283,6 @@ class Controller(object):
             root.putChild('clk', ClickHandler(self))
         
         site = server.Site(root)
-        site.protocol = MyProtocol
-
         reactor.listenTCP(self.config['site']['port'], site)  # @UndefinedVariable
         reactor.run()  # @UndefinedVariable
 
@@ -325,8 +324,8 @@ class InfoHandler(Resource):
 
     def render(self, request):
         version = controller.version
-        connect_from = site.protocol.connected_peer # TODO: test this, if it works, reopen the app to the web
-        return version + " - connect from: " + connect_from
+        # connect_from = self.protocol.connected_peer # TODO: test this, if it works, reopen the app to the web
+        return version # + " - connect from: " + connect_from
 
 class MyProtocol(protocol.Protocol):
     def connectionMade(self):
@@ -342,7 +341,6 @@ class ConfigHandler(Resource):
         request.setHeader('Content-Type', 'application/json')
         return json.dumps([(d.id, d.name, d.last_state, d.last_state_time, d.is_auto_door)
                            for d in self.controller.doors])
-
 
 class UptimeHandler(Resource):
     isLeaf = True
