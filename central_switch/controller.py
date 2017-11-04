@@ -14,7 +14,7 @@ from logger import CSLogger
 from datetime import timedelta
 
 from twisted.internet import task
-from twisted.internet import reactor
+from twisted.internet import reactor, protocol
 from twisted.web import server
 from twisted.web.static import File
 from twisted.web.resource import Resource, IResource
@@ -316,16 +316,18 @@ class StatusHandler(Resource):
 class InfoHandler(Resource):
     isLeaf = True
 
-    def __init__(self, controller):
+    def __init__(self, controller): # TODO: is this even needed
         Resource.__init__(self)
         self.controller = controller
 
     def render(self, request):
-        return controller.version
+        version = controller.version
+        connect_from = protocol.Protocol.transport.transport.getPeer() # TODO: test this
+        return version + " - connect from: " + connect_from
 
 class ConfigHandler(Resource):
     isLeaf = True
-    def __init__(self, controller): # todo: does this even work
+    def __init__(self, controller): # TODO: does this even work
         Resource.__init__(self)
         self.controller = controller
 
