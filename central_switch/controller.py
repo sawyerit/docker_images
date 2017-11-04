@@ -242,11 +242,6 @@ class Controller(object):
         if door and door.is_auto_door:
             door.toggle_relay()
             return
-        # for d in self.doors:
-        #     if d.id == doorId and d.is_auto_door == True:
-        #         syslog.syslog('%s: toggled' % d.name)
-        #         d.toggle_relay()
-        #         return
 
     def get_updates(self, lastupdate):
         updates = []
@@ -257,9 +252,7 @@ class Controller(object):
         return updates
 
     def get_door_byid(self, doorid):
-        # todo test this out
-        it = iter(self.doors)
-        return next([x for x in it if x.id == doorid], None)
+        return next((x for x in self.doors if x.id == doorid), None)
 
     def run(self):
         task.LoopingCall(self.status_check).start(0.5)
@@ -315,7 +308,7 @@ class StatusHandler(Resource):
                 return d.last_state
         return ''
 
-class InfoHandler(Resource):
+class InfoHandler(protocol):
     isLeaf = True
 
     def __init__(self, controller): # TODO: is this even needed
@@ -324,12 +317,8 @@ class InfoHandler(Resource):
 
     def render(self, request):
         version = controller.version
-        # connect_from = self.protocol.connected_peer # TODO: test this, if it works, reopen the app to the web
-        return version # + " - connect from: " + connect_from
-
-class MyProtocol(protocol.Protocol):
-    def connectionMade(self):
-        self.connected_peer = self.transport.getPeer()
+        connect_from = self.transport.getHost() # TODO: test this, if it works, reopen the app to the web
+        return version + " - connect from: " + connect_from.host
 
 class ConfigHandler(Resource):
     isLeaf = True
