@@ -29,26 +29,6 @@ $.ajax({
             <button id="${door[0]}-door-button" type="button" class="${showhide} btn " onclick="garageclick('${door[0]}')">Click to ${nextState.toUpperCase()}</a>;
             </div></div>`;
         }));
-
-        // for (var i = 0; i < data.length; i++) {
-        //     var id = data[i][0];
-        //     var name = data[i][1];
-        //     var state = data[i][2];
-        //     var time = data[i][3];
-        //     var autodoor = data[i][4];
-        //     var nextState = state == 'open' ? 'close' : 'open';
-
-        //     var card = '<div id="' + id + '" class="card text-center">';
-        //     card = card + '<div class="card-header"><div id="' + id + '-door" class="garage ' + state + '-garage"></div></div>';
-        //     card = card + '<div class="card-block">';
-        //     card = card + '<h4 class="card-title text-center">' + name + '</h4>';
-        //     card = card + '<p class="card-text">' + formatState(state, time) + '</p>';
-        //     card = card + '<button id="' + id + '-door-button" type="button" class="'+ ((autodoor) ? '' : 'dontshow') + ' btn " onclick="garageclick(\'' + id + '\')">Click to ' + nextState.toUpperCase() + '</a>';
-        //     card = card + '</div></div>';
-
-        //     $("#doorlist").append(card);
-
-        // }
     }
 });
 

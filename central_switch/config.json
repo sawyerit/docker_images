@@ -48,7 +48,7 @@
 		"garagebackdoor": {
             "name": "Back Door",
             "auto_door": "False",
-			"state_pin": 17,
+			"state_pin": 27,
 			"state_pin_closed_value": 0,
 			"openhab_name": "back_door",
             "pi_ip": "192.168.0.12"

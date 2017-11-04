@@ -45,7 +45,7 @@ class Door(object):
         self.logger = glogger
         self.id = doorId
         self.is_auto_door = config['auto_door'] == "True"
-        self.door_ip = config['pi_ip']
+        self.door_ip = config['pi_ip'] # remote pi that controls this door sensor
         self.name = config['name']
         self.relay_pin = config.get('relay_pin')
         self.state_pin = config['state_pin']
@@ -65,8 +65,6 @@ class Door(object):
         self.remote_pi.set_pull_up_down(self.state_pin, pigpio.PUD_UP)
 
     def get_state(self):
-        # todo: remove commented code once working
-        #if gpio.input(self.state_pin) == self.state_pin_closed_value:
         if self.remote_pi.read(self.state_pin) == self.state_pin_closed_value:
             return 'closed'
         elif self.last_action == 'open':
@@ -238,12 +236,16 @@ class Controller(object):
         conn.getresponse()
 
     def toggle(self, doorId):
-        # todo update to use the getdoorbyid method?
-        for d in self.doors:
-            if d.id == doorId and d.is_auto_door == True:
-                syslog.syslog('%s: toggled' % d.name)
-                d.toggle_relay()
-                return
+        # todo update to use the getdoorbyid method? TEST!
+        door = self.get_door_byid(doorId)
+        if door and door.is_auto_door:
+            door.toggle_relay()
+            return
+        # for d in self.doors:
+        #     if d.id == doorId and d.is_auto_door == True:
+        #         syslog.syslog('%s: toggled' % d.name)
+        #         d.toggle_relay()
+        #         return
 
     def get_updates(self, lastupdate):
         updates = []
@@ -254,8 +256,8 @@ class Controller(object):
         return updates
 
     def get_door_byid(self, doorid):
-        # todo can this return a single element?
-        return filter(lambda x: x.id == doorid, self.doors) 
+        # todo test this out
+        return next([x for x in self.doors if x.id == doorid], None)
 
     def run(self):
         task.LoopingCall(self.status_check).start(0.5)
@@ -288,9 +290,8 @@ class ClickHandler(Resource):
         self.controller = controller
 
     def render(self, request):
-        cur_doors = self.controller.get_door_byid(request.args['id'][0])
-        if cur_doors:
-            cur_door = cur_doors[0]
+        cur_door = self.controller.get_door_byid(request.args['id'][0])
+        if cur_door:
             self.controller.toggle(cur_door.id)
             return 'OK'
         else:
@@ -299,48 +300,42 @@ class ClickHandler(Resource):
 class StatusHandler(Resource):
     isLeaf = True
 
-    def __init__ (self, controller):
+    def __init__(self, controller):
         Resource.__init__(self)
         self.controller = controller
 
     def render(self, request):
         door = request.args['id'][0]
         for d in self.controller.doors:
-            if (d.id == door):
+            if d.id == door:
                 return d.last_state
         return ''
 
 class ConfigHandler(Resource):
     isLeaf = True
-    def __init__ (self, controller):
+    def __init__(self, controller): # todo: does this even work
         Resource.__init__(self)
         self.controller = controller
 
     def render(self, request):
         request.setHeader('Content-Type', 'application/json')
         return json.dumps([(d.id, d.name, d.last_state, d.last_state_time, d.is_auto_door)
-                            for d in self.controller.doors])
+                           for d in self.controller.doors])
 
 
 class UptimeHandler(Resource):
     isLeaf = True
-    def __init__ (self, controller):
+    def __init__(self, controller):
         Resource.__init__(self)
 
-    def render(self,request):
+    def render(self, request):
         request.setHeader('Content-Type', 'application/json')
 
         with open('/proc/uptime', 'r') as f:
             uptime_seconds = float(f.readline().split()[0])
-            uptime_string = str(timedelta(seconds = uptime_seconds))
-        # todo maybe not needed
-        # uptime = subprocess.check_output(['uptime', '-p']).strip()
-        # uptime = uptime.replace("up ", "")
-        # uptime = uptime.split(",")[0].replace(",","").strip()
-        # if (uptime == "up"):
-        #     uptime = "0 mins"
+            uptime_string = str(timedelta(seconds=uptime_seconds))
         return json.dumps("Uptime: " + uptime_string)
-    
+
 class UpdateHandler(Resource):
     isLeaf = True
     def __init__(self, controller):
