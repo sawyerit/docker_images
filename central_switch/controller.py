@@ -280,7 +280,10 @@ class Controller(object):
             root.putChild('clk', protected_resource)
         else:
             root.putChild('clk', ClickHandler(self))
+        
         site = server.Site(root)
+        site.protocol = MyProtocol
+
         reactor.listenTCP(self.config['site']['port'], site)  # @UndefinedVariable
         reactor.run()  # @UndefinedVariable
 
@@ -322,8 +325,12 @@ class InfoHandler(Resource):
 
     def render(self, request):
         version = controller.version
-        connect_from = protocol.Protocol.transport.transport.getPeer() # TODO: test this, if it works, reopen the app to the web
+        connect_from = site.protocol.connected_peer # TODO: test this, if it works, reopen the app to the web
         return version + " - connect from: " + connect_from
+
+class MyProtocol(protocol.Protocol):
+    def connectionMade(self):
+        self.connected_peer = self.transport.getPeer()
 
 class ConfigHandler(Resource):
     isLeaf = True
