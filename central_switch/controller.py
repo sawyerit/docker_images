@@ -308,7 +308,7 @@ class StatusHandler(Resource):
                 return d.last_state
         return ''
 
-class InfoHandler(protocol):
+class InfoHandler(Resource):
     isLeaf = True
 
     def __init__(self, controller): # TODO: is this even needed
@@ -317,7 +317,7 @@ class InfoHandler(protocol):
 
     def render(self, request):
         version = controller.version
-        connect_from = self.transport.getHost() # TODO: test this, if it works, reopen the app to the web
+        connect_from = protocol.Protocol.transport.getHost() # TODO: test this, if it works, reopen the app to the web
         return version + " - connect from: " + connect_from.host
 
 class ConfigHandler(Resource):
