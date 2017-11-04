@@ -237,7 +237,6 @@ class Controller(object):
         conn.getresponse()
 
     def toggle(self, doorId):
-        # todo update to use the getdoorbyid method? TEST!
         door = self.get_door_byid(doorId)
         if door and door.is_auto_door:
             door.toggle_relay()
@@ -317,7 +316,7 @@ class InfoHandler(Resource):
 
     def render(self, request):
         version = controller.version
-        connect_from = protocol.Protocol.transport.getHost() # TODO: test this, if it works, reopen the app to the web
+        connect_from = request.getClientIP(self) # TODO: test this, if it works
         return version + " - connect from: " + connect_from.host
 
 class ConfigHandler(Resource):
@@ -400,6 +399,10 @@ class UpdateHandler(Resource):
 
         # tell the client we're not done yet
         return server.NOT_DONE_YET
+
+class SiteProtocol(protocol.Protocol):
+    def connectionMade(self):
+        self.peer = self.transport.getPeer()
 
 def elapsed_time(seconds, suffixes=['y','w','d','h','m','s'], add_s=False, separator=' '):
     """
