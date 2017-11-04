@@ -322,7 +322,7 @@ class InfoHandler(Resource):
 
     def render(self, request):
         version = controller.version
-        connect_from = protocol.Protocol.transport.transport.getPeer() # TODO: test this
+        connect_from = protocol.Protocol.transport.transport.getPeer() # TODO: test this, if it works, reopen the app to the web
         return version + " - connect from: " + connect_from
 
 class ConfigHandler(Resource):
