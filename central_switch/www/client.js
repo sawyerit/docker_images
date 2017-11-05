@@ -56,7 +56,7 @@ function info() {
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#version").html(errorThrown);
         },
-        dataType: "json"
+        dataType: "html"
     });
 }
 

@@ -316,8 +316,8 @@ class InfoHandler(Resource):
 
     def render(self, request):
         version = controller.version
-        connect_from = request.getClientIP(self) # TODO: test this, if it works
-        return version + " - connect from: " + connect_from.host
+        connect_from = request.getClientIP() # TODO: test this, if it works
+        return str(version + " - connect from: " + connect_from)
 
 class ConfigHandler(Resource):
     isLeaf = True
