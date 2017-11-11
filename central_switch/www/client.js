@@ -26,7 +26,7 @@ $.ajax({
             <div class="card-block">
             <h4 class="card-title text-center">${door[1]}</h4>
             <p class="card-text">${formattedState}</p>
-            <button id="${door[0]}-door-button" type="button" class="${showhide} btn " onclick="garageclick('${door[0]}')">Click to ${nextState.toUpperCase()}</a>;
+            <button id="${door[0]}-door-button" type="button" class="${showhide} btn " onclick="garageclick('${door[0]}')">Click to ${nextState.toUpperCase()}</a>
             </div></div>`;
         }));
     }
@@ -76,7 +76,7 @@ function poll() {
                 $("#" + id + " p").html(formatState(state, time));
                 $("#" + id + "-door").removeClass().addClass("garage " + state + "-garage");
                 let btn = $("#" + id + "-door-button");
-                btn.text(oppositeState.toUpperCase());
+                btn.text("Click to " + oppositeState.toUpperCase());
             }
             setTimeout(poll, 1000);
         },
