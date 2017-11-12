@@ -108,7 +108,7 @@ class UpdateHandler(Resource):
 
         # set jsonp callback handler name if it exists
         if 'callback' in args:
-            request.jsonpcallback =  args['callback'][0]
+            request.jsonpcallback = args['callback'][0]
 
         # set lastupdate if it exists
         if 'lastupdate' in args:
@@ -120,10 +120,10 @@ class UpdateHandler(Resource):
         # Can we accommodate this request now?
         updates = self.controller.get_updates(request.lastupdate)
         if updates != []:
-            print('doing the update')
+            print 'doing the update'
             return self.format_updates(request, updates)
 
-        print('delaying request')
+        print 'delaying request'
         request.notifyFinish().addErrback(lambda x: self.delayed_requests.remove(request))
         self.delayed_requests.append(request)
 
