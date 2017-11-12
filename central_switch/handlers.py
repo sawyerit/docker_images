@@ -46,7 +46,7 @@ class InfoHandler(Resource):
 
     def render(self, request):
         version = self.controller.version
-        connect_from = request.getClientIP(self)
+        connect_from = request.getClientIP()
         return version + " - connect from: " + connect_from.host
 
 class ConfigHandler(Resource):
