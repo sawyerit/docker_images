@@ -43,11 +43,13 @@ class InfoHandler(Resource):
     def __init__(self, controller): # TODO: is this even needed
         Resource.__init__(self)
         self.controller = controller
+        self.is_remote_ip = False
 
     def render(self, request):
         version = self.controller.version
-        connect_from = request.getClientIP()
-        return str(version + " - connect from: " + connect_from)
+        connect_from = str(request.getClientIP())
+        self.is_remote_ip = not connect_from.startswith("192")
+        return version + " - connect from: " + connect_from
 
 class ConfigHandler(Resource):
     isLeaf = True

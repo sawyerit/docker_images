@@ -185,15 +185,16 @@ class Controller(object):
         return next((x for x in self.doors if x.id == doorid), None)
 
     def run(self):
+        info_handler = InfoHandler(self)
         task.LoopingCall(self.status_check).start(0.5)
         root = File('www')
         root.putChild('st', StatusHandler(self))
         root.putChild('upd', self.updateHandler)
         root.putChild('cfg', ConfigHandler(self))
         root.putChild('upt', UptimeHandler(self))
-        root.putChild('inf', InfoHandler(self))
+        root.putChild('inf', info_handler)
 
-        if self.config['config']['use_auth']:
+        if self.config['config']['use_auth'] and info_handler.is_remote_ip:
             clk = ClickHandler(self)
             args = {self.config['site']['username']:self.config['site']['password']}
             checker = checkers.InMemoryUsernamePasswordDatabaseDontUse(**args)
