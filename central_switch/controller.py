@@ -1,7 +1,8 @@
 """Software to monitor and control your home via a raspberry pi."""
 
-import time, syslog, uuid
+import time
 import smtplib
+import syslog
 
 import json
 import httplib
@@ -35,11 +36,11 @@ class HttpPasswordRealm(object):
         raise NotImplementedError()
 
 class Controller(object):
+    """ The controller object sets up the webserver, handles events from the UI,
+    handles event notification, logging etc. It is the main execution of the
+    application.
+    """
     def __init__(self, config):
-        """ The controller object sets up the webserver, handles events from the UI,
-        handles event notification, logging etc. It is the main execution of the
-        application.
-        """
         # Setup loggers for writing to google drive
         self.version = config['config']['version']
         self.use_gdrive = config['config']['use_gdrive']

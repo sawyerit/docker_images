@@ -9,6 +9,9 @@ from twisted.web import server
 from twisted.web.resource import Resource
 
 class ClickHandler(Resource):
+    """ Handles click events from the web application.
+    Currently a click event will toggle the garage door.
+    """
     isLeaf = True
 
     def __init__(self, controller):
@@ -21,9 +24,12 @@ class ClickHandler(Resource):
             self.controller.toggle(cur_door.id)
             return 'OK'
         else:
-            return 'NOT FOUND' # todo: return something valid here
+            return 'NOT FOUND'
 
 class StatusHandler(Resource):
+    """ 
+    Provides the state of the doors to the web front end
+    """
     isLeaf = True
 
     def __init__(self, controller):
@@ -38,9 +44,12 @@ class StatusHandler(Resource):
         return ''
 
 class InfoHandler(Resource):
+    """ Provides information on the connecting IP address and displays 
+    the version to the web front end.
+    """
     isLeaf = True
 
-    def __init__(self, controller): # TODO: is this even needed
+    def __init__(self, controller):
         Resource.__init__(self)
         self.controller = controller
         self.is_remote_ip = False
@@ -52,8 +61,11 @@ class InfoHandler(Resource):
         return version + " - connect from: " + connect_from
 
 class ConfigHandler(Resource):
+    """ Sets up the web front end based on the config.json file
+    Returns json to build the door web objects.
+    """
     isLeaf = True
-    def __init__(self, controller): # TODO: does this even work
+    def __init__(self, controller):
         Resource.__init__(self)
         self.controller = controller
 
@@ -63,6 +75,9 @@ class ConfigHandler(Resource):
                            for d in self.controller.doors])
 
 class UptimeHandler(Resource):
+    """ 
+    Provides server uptime data to the web front end
+    """
     isLeaf = True
     def __init__(self, controller):
         Resource.__init__(self)
@@ -76,6 +91,9 @@ class UptimeHandler(Resource):
         return json.dumps("Uptime: " + uptime_string)
 
 class UpdateHandler(Resource):
+    """
+    Handles updates to the state of the doors
+    """
     isLeaf = True
     def __init__(self, controller):
         Resource.__init__(self)

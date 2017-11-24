@@ -13,7 +13,7 @@ Overview:
 This project provides software and hardware installation instructions for monitoring and controlling your house locally or remotely (via the web or a smart phone). The software is designed to run on a [Raspberry Pi](www.raspberrypi.org), and supports:
 * Monitoring of the state of the garage doors (indicating whether they are open, closed, opening, or closing)
 * Remote control of the garage doors
-* Logging of all garage door activity (todo: via ifttt to google sheet??)
+* Logging of all garage door activity to a Google spreadsheet
 
 In future updates:
 * Monitoring man doors of your house
@@ -41,6 +41,7 @@ Requirements for monitoring automatic garage doors:
 * Python Twisted web module
 * Pigpio remote gpio library
 * Bootstrap CSS & JQuery
+* As a bonus, you can expose the website through a port on your router to access from anywhere!  I personally use [Duck DNS](http://www.duckdns.org) for dynamic dns so I don't have to worry about the ip changing.
 
 [Hardware Setup Instructions](https://github.com/sawyerit/docker_images/tree/master/central_switch/hardware.md)
 ------
@@ -50,14 +51,7 @@ Requirements for monitoring automatic garage doors:
 -----
 
 
-Todo:
+Nice to have future items:
 -----
-
-* write door logs to gdrive spreadsheet - finish implementation of all logging 
-* connection is not long-lived to spreadsheet, check auth each time before logging
-* dynamic dns on router for "static ip" (or run noip server on PI instead of messing w/router)
-* assign static ip's to the pi's
-* breadboard POC the switch and controller, remote GPIO code
-* wire up pi zero w and switch to opener
 * Alexa skill to get status of garage door
 * enable touchscreen on seperate PI for controlling items
