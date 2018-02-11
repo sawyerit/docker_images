@@ -49,7 +49,7 @@ class InfoHandler(Resource):
         version = self.controller.version
         connect_from = str(request.getClientIP())
         self.is_remote_ip = not connect_from.startswith("192")
-        return version + " - connect from: " + connect_from
+        return str(version + " - connect from: " + connect_from)
 
 class ConfigHandler(Resource):
     isLeaf = True
