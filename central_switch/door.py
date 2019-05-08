@@ -83,7 +83,7 @@ class Door(object):
         if self.remote_pi.connected:
             self.logger.log(["Controller", "connected to pi for door " + self.name])
         else:
-            if self.remote_connect_count > 8:
+            if self.remote_connect_count < 8:
                 self.remote_connect_count += 1
                 time.sleep(2*self.remote_connect_count)
                 self.connect_remote_pi()
