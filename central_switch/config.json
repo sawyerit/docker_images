@@ -44,7 +44,7 @@
 			"approx_time_to_close": 10,
 			"approx_time_to_open": 10,
 			"openhab_name": "main_door",
-            "pi_ip": "192.168.0.12"
+            "pi_ip": "192.168.1.98"
 		},
 		"garagebackdoor": {
             "name": "Back Door",
@@ -52,7 +52,7 @@
 			"state_pin": 27,
 			"state_pin_closed_value": 0,
 			"openhab_name": "back_door",
-            "pi_ip": "192.168.0.12"
+            "pi_ip": "192.168.1.98"
 		}
 	}
 }
