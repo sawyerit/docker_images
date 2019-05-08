@@ -2,9 +2,9 @@
 	"config": {
 		"use_auth": true,
 		"use_alerts": false,
-        "use_openhab": false,
-        "use_gdrive": true,
-        "version": "0.1.0"
+		"use_openhab": false,
+		"use_gdrive": true,
+		"version": "0.1.0"
 	},
 	"alerts": {
 		"time_to_wait": 10,
@@ -36,23 +36,83 @@
 	},
 	"doors": {
 		"main": {
-            "name": "MAIN",
-            "auto_door": "True",
+			"name": "MAIN",
+			"auto_door": "True",
 			"relay_pin": 23,
 			"state_pin": 17,
 			"state_pin_closed_value": 0,
 			"approx_time_to_close": 10,
 			"approx_time_to_open": 10,
 			"openhab_name": "main_door",
-            "pi_ip": "192.168.1.98"
+			"pi_ip": "192.168.1.98"
 		},
 		"garagebackdoor": {
-            "name": "Back Door",
-            "auto_door": "False",
+			"name": "Back Door",
+			"auto_door": "False",
 			"state_pin": 27,
 			"state_pin_closed_value": 0,
 			"openhab_name": "back_door",
-            "pi_ip": "192.168.1.98"
+			"pi_ip": "192.168.1.98"
+		}
+	},
+	"irrigation": {
+		"pi_ip": "192.168.1.XX",		
+		"zones": {
+			"1": {
+				"name": "front-east",
+				"relay_pin": 23,
+				"default_open_time": 5
+			},
+			"2": {
+				"name": "front-middle",
+				"relay_pin": 23,
+				"default_open_time": 5
+			},
+			"3": {
+				"name": "front-sidewalk",
+				"relay_pin": 23,
+				"default_open_time": 5
+			},
+			"4": {
+				"name": "back-east-sprayers",
+				"relay_pin": 23,
+				"default_open_time": 5
+			},
+			"5": {
+				"name": "back-rotators",
+				"relay_pin": 23,
+				"default_open_time": 5
+			},
+			"6": {
+				"name": "center",
+				"relay_pin": 23,
+				"default_open_time": 5
+			},
+			"7": {
+				"name": "??",
+				"relay_pin": 23,
+				"default_open_time": 5
+			},
+			"8": {
+				"name": "back-west?",
+				"relay_pin": 23,
+				"default_open_time": 5
+			},
+			"9": {
+				"name": "patio-rotator",
+				"relay_pin": 23,
+				"default_open_time": 5
+			},
+			"10": {
+				"name": "patio-sprayer",
+				"relay_pin": 23,
+				"default_open_time": 5
+			},
+			"11": {
+				"name": "front-west",
+				"relay_pin": 23,
+				"default_open_time": 5
+			}
 		}
 	}
 }

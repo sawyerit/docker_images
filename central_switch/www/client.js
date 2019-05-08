@@ -96,6 +96,9 @@ setupNav = () => {
     $('.navigate.garage-page').click(function () {
         window.location.href = 'garage.html';
     });
+    $('.navigate.irrigation-page').click(function () {
+        window.location.href = 'irrigation.html';
+    });
     $('.navigate.cameras-page').click(function () {
         window.location.href = 'cameras.html';
     });
