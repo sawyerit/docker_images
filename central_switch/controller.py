@@ -12,7 +12,7 @@ import urllib
 #import pigpio
 
 from door import Door
-from handlers import ClickHandler, ConfigHandler, InfoHandler
+from handlers import ClickHandler, ConfigHandlerDoor, InfoHandler
 from handlers import StatusHandler, UpdateHandler, UptimeHandler
 from logger import CSLogger
 
@@ -192,7 +192,7 @@ class Controller(object):
         root = File('www')
         root.putChild('st', StatusHandler(self))
         root.putChild('upd', self.updateHandler)
-        root.putChild('cfg', ConfigHandler(self))
+        root.putChild('cfg-door', ConfigHandlerDoor(self))
         root.putChild('upt', UptimeHandler(self))
         root.putChild('inf', info_handler)
 

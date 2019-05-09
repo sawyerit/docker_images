@@ -14,7 +14,7 @@ garageclick = (name) => {
 };
 
 $.ajax({
-    url: "cfg",
+    url: "cfg-door",
     success: function (data) {
         $("#doorlist").append(data.map(door => {
             var showhide = door[4] ? '' : 'dontshow';
@@ -29,6 +29,9 @@ $.ajax({
             <button id="${door[0]}-door-button" type="button" class="${showhide} btn " onclick="garageclick('${door[0]}')">Click to ${nextState.toUpperCase()}</a>
             </div></div>`;
         }));
+    },
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+        Console.log(errorThrown);
     }
 });
 
