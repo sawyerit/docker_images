@@ -8,6 +8,7 @@ import json
 import httplib
 import urllib
 
+# undo
 #import pigpio
 
 from door import Door

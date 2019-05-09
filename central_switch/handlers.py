@@ -140,7 +140,7 @@ class UpdateHandler(Resource):
         # Can we accommodate this request now?
         updates = self.controller.get_updates(request.lastupdate)
         if updates != []:
-            print 'doing the update'
+            print('doing the update')
             return self.format_updates(request, updates)
 
         print 'delaying request'

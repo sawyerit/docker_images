@@ -1,7 +1,7 @@
 """ This module contains the door object and its methods """
 import time
 
-import pigpio
+# import pigpio
 
 class Door(object):
     """ The Door object created from the config.json file. A new instance of door is
@@ -31,17 +31,20 @@ class Door(object):
         # setup garage remote pi, one for each door
         self.connect_remote_pi()
 
-        if self.relay_pin:
-            self.remote_pi.set_mode(self.relay_pin, pigpio.OUTPUT)
-            self.remote_pi.write(self.relay_pin, 1)
-        self.remote_pi.set_mode(self.state_pin, pigpio.INPUT)
-        self.remote_pi.set_pull_up_down(self.state_pin, pigpio.PUD_UP)
+        #  undo
+        # if self.relay_pin:
+        #     self.remote_pi.set_mode(self.relay_pin, pigpio.OUTPUT)
+        #     self.remote_pi.write(self.relay_pin, 1)
+        # self.remote_pi.set_mode(self.state_pin, pigpio.INPUT)
+        # self.remote_pi.set_pull_up_down(self.state_pin, pigpio.PUD_UP)
 
     def get_state(self):
         """ Gets the current state of the door based on the state_pin
         and returns the state/status.
         """
-        if self.remote_pi.read(self.state_pin) == self.state_pin_closed_value:
+        # undo
+        # if self.remote_pi.read(self.state_pin) == self.state_pin_closed_value:
+        if 0 == self.state_pin_closed_value:
             return 'closed'
         elif self.last_action == 'open':
             if time.time() - self.last_action_time >= self.time_to_open:
@@ -71,21 +74,23 @@ class Door(object):
             self.last_action = None
             self.last_action_time = None
 
-        self.remote_pi.write(self.relay_pin, 0)
-        time.sleep(0.2)
-        self.remote_pi.write(self.relay_pin, 1)
+        # undo
+        # self.remote_pi.write(self.relay_pin, 0)
+        # time.sleep(0.2)
+        # self.remote_pi.write(self.relay_pin, 1)
 
     def connect_remote_pi(self):
         """ Recursively try to connect to remote pi
         e.g. incase its not back up after a power failure
         """
-        self.remote_pi = pigpio.pi(self.door_ip)
-        if self.remote_pi.connected:
-            self.logger.log(["Controller", "connected to pi for door " + self.name])
-        else:
-            if self.remote_connect_count < 8:
-                self.remote_connect_count += 1
-                time.sleep(2*self.remote_connect_count)
-                self.connect_remote_pi()
-            else:
-                self.logger.log(["Controller", "could not connect to pi for door " + self.name])
+        # undo
+        # self.remote_pi = pigpio.pi(self.door_ip)
+        # if self.remote_pi.connected:
+        #     self.logger.log(["Controller", "connected to pi for door " + self.name])
+        # else:
+        #     if self.remote_connect_count < 8:
+        #         self.remote_connect_count += 1
+        #         time.sleep(2*self.remote_connect_count)
+        #         self.connect_remote_pi()
+        #     else:
+        #         self.logger.log(["Controller", "could not connect to pi for door " + self.name])

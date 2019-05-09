@@ -27,14 +27,15 @@ class CSLogger(object):
                 pass
 
     def log(self, row_data):
-        self.client.login() # call login again "in case" we have an expired session
-        
-        #get the time and add it to the row values
-        now_mtn = datetime.now() + timedelta(hours=-6)
-        row_data.insert(0, str(now_mtn))
+        if not self.client is None:
+            self.client.login() # call login again "in case" we have an expired session
+            
+            #get the time and add it to the row values
+            now_mtn = datetime.now() + timedelta(hours=-6)
+            row_data.insert(0, str(now_mtn))
 
-        # if we have a sheet, we're logging to google drive sheet, else stdout
-        if self.sheet:
-            self.sheet.append_row(row_data)
-        else:
-            print(row_data)
+            # if we have a sheet, we're logging to google drive sheet, else stdout
+            if self.sheet:
+                self.sheet.append_row(row_data)
+            else:
+                print(row_data)

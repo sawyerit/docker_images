@@ -3,7 +3,7 @@
 		"use_auth": true,
 		"use_alerts": false,
 		"use_openhab": false,
-		"use_gdrive": true,
+		"use_gdrive": false,
 		"version": "0.1.0"
 	},
 	"alerts": {
