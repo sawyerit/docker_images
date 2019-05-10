@@ -12,7 +12,8 @@ import urllib
 #import pigpio
 
 from door import Door
-from handlers import ClickHandler, ConfigHandlerDoor, InfoHandler
+from zone import Zone
+from handlers import ClickHandler, ConfigHandlerDoor, ConfigHandlerZone, InfoHandler
 from handlers import StatusHandler, UpdateHandler, UptimeHandler
 from logger import CSLogger
 
@@ -52,11 +53,18 @@ class Controller(object):
         self.server_logger.log(["CentralStation", "server controller started"])
         # setup the configuration
         self.config = config
-        self.doors = [Door(n, c, self.garage_logger) for (n, c) in config['doors'].items()]
         self.updateHandler = UpdateHandler(self)
+
+        self.doors = [Door(n, c, self.garage_logger) for (n, c) in config['doors'].items()]
         for door in self.doors:
             door.last_state = 'unknown'
             door.last_state_time = time.time()
+
+        self.zones = [Zone(n, c, self.garage_logger) for (n, c) in config['irrigation']['zones'].items()]
+        print(len(self.zones))
+        for zone in self.zones:
+            zone.last_run_time = time.time()
+
         self.use_alerts = config['config']['use_alerts']
         self.alert_type = config['alerts']['alert_type']
         self.ttw = config['alerts']['time_to_wait']
@@ -193,6 +201,7 @@ class Controller(object):
         root.putChild('st', StatusHandler(self))
         root.putChild('upd', self.updateHandler)
         root.putChild('cfg-door', ConfigHandlerDoor(self))
+        root.putChild('cfg-zone', ConfigHandlerZone(self))
         root.putChild('upt', UptimeHandler(self))
         root.putChild('inf', info_handler)
 

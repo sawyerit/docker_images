@@ -74,6 +74,20 @@ class ConfigHandlerDoor(Resource):
         return json.dumps([(d.id, d.name, d.last_state, d.last_state_time, d.is_auto_door)
                            for d in self.controller.doors])
 
+class ConfigHandlerZone(Resource):
+    """ Sets up the web front end based on the config.json file
+    Returns json to build the zone web objects.
+    """
+    isLeaf = True
+    def __init__(self, controller):
+        Resource.__init__(self)
+        self.controller = controller
+
+    def render(self, request):
+        request.setHeader('Content-Type', 'application/json')
+        return json.dumps([(z.id, z.name, z.last_run_time)
+                           for z in self.controller.zones])                           
+
 class UptimeHandler(Resource):
     """ 
     Provides server uptime data to the web front end

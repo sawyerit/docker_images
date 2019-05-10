@@ -56,62 +56,72 @@
 		}
 	},
 	"irrigation": {
-		"pi_ip": "192.168.1.XX",		
 		"zones": {
 			"1": {
 				"name": "front-east",
 				"relay_pin": 23,
-				"default_open_time": 5
+				"default_open_time": 5,
+				"pi_ip": "192.168.1.XX"
 			},
 			"2": {
 				"name": "front-middle",
 				"relay_pin": 23,
-				"default_open_time": 5
+				"default_open_time": 5,
+				"pi_ip": "192.168.1.XX"
 			},
 			"3": {
 				"name": "front-sidewalk",
 				"relay_pin": 23,
-				"default_open_time": 5
+				"default_open_time": 5,
+				"pi_ip": "192.168.1.XX"
 			},
 			"4": {
 				"name": "back-east-sprayers",
 				"relay_pin": 23,
-				"default_open_time": 5
+				"default_open_time": 5,
+				"pi_ip": "192.168.1.XX"
 			},
 			"5": {
 				"name": "back-rotators",
 				"relay_pin": 23,
-				"default_open_time": 5
+				"default_open_time": 5,
+				"pi_ip": "192.168.1.XX"
 			},
 			"6": {
 				"name": "center",
 				"relay_pin": 23,
-				"default_open_time": 5
+				"default_open_time": 5,
+				"pi_ip": "192.168.1.XX"
 			},
 			"7": {
 				"name": "??",
 				"relay_pin": 23,
-				"default_open_time": 5
+				"default_open_time": 5,
+				"pi_ip": "192.168.1.XX"
 			},
 			"8": {
 				"name": "back-west?",
 				"relay_pin": 23,
-				"default_open_time": 5
+				"default_open_time": 5,
+				"pi_ip": "192.168.1.XX"
 			},
 			"9": {
 				"name": "patio-rotator",
 				"relay_pin": 23,
-				"default_open_time": 5
+				"default_open_time": 5,
+				"pi_ip": "192.168.1.XX"
 			},
 			"10": {
 				"name": "patio-sprayer",
 				"relay_pin": 23,
-				"default_open_time": 5
+				"default_open_time": 5,
+				"pi_ip": "192.168.1.XX"
 			},
 			"11": {
 				"name": "front-west",
 				"relay_pin": 23,
-				"default_open_time": 5
+				"default_open_time": 5,
+				"pi_ip": "192.168.1.XX"
 			}
 		}
 	}

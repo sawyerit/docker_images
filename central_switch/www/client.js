@@ -9,7 +9,14 @@ function formatState(state, time) {
 garageclick = (name) => {
     $.ajax({
         url: "clk",
-        data: { 'id': name }
+        data: { 'id': name, 'type': 'door' }
+    });
+};
+
+zoneclick = (name) => {
+    $.ajax({
+        url: "clk",
+        data: { 'id': name, 'type': 'zone' }
     });
 };
 
@@ -27,6 +34,27 @@ $.ajax({
             <h4 class="card-title text-center">${door[1]}</h4>
             <p class="card-text">${formattedState}</p>
             <button id="${door[0]}-door-button" type="button" class="${showhide} btn " onclick="garageclick('${door[0]}')">Click to ${nextState.toUpperCase()}</a>
+            </div></div>`;
+        }));
+    },
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+        Console.log(errorThrown);
+    }
+});
+
+$.ajax({
+    url: "cfg-zone",
+    success: function (data) {
+        $("#zonelist").append(data.map(zone => {
+            var nextState = zone[2] == 'on' ? 'off' : 'off';
+            var formattedState = formatState(zone[1], zone[2]);
+
+            return `<div id="${zone[0]}" class="card text-center">
+            <div class="card-header"><div id="${zone[0]}-door" class="garage closed-garage"></div></div>
+            <div class="card-block">
+            <h4 class="card-title text-center">${zone[1]}</h4>
+            <p class="card-text">${formattedState}</p>
+            <button id="${zone[0]}-door-button" type="button" btn " onclick="zoneclick('${zone[0]}')">Click to ${nextState.toUpperCase()}</a>
             </div></div>`;
         }));
     },
