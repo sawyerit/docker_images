@@ -24,7 +24,6 @@ class Door(object):
         self.state_pin_closed_value = config.get('state_pin_closed_value', 0)
         self.time_to_close = config.get('time_to_close', 10)
         self.time_to_open = config.get('time_to_open', 10)
-        self.openhab_name = config.get('openhab_name')
         self.open_time = time.time()
         self.remote_connect_count = 0
 

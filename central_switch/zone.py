@@ -34,16 +34,20 @@ class Zone(object):
         zone via the relay.
         """
         state = self.get_state()
-        if state == 'open':
-            self.last_action = 'close'
+        if state == 'on':
+            self.last_action = 'off'
             self.last_action_time = time.time()
-        elif state == 'closed':
-            self.last_action = 'open'
+        elif state == 'off':
+            self.last_action = 'on'
             self.last_action_time = time.time()
         else:
             self.last_action = None
             self.last_action_time = None
 
+        #
+        print("turning zone on")
+        time.sleep(5)
+        print("turning zone off")
         # undo
         # self.remote_pi.write(self.relay_pin, 0)
         # time.sleep(self.default_open_time) # todo: make open time more dynamic, editable via the web app
@@ -59,10 +63,10 @@ class Zone(object):
             return 'off'
         elif self.last_action == 'on':
             if time.time() - self.last_action_time >= self.default_open_time:
-                return 'turning off'
+                return 'off'
         elif self.last_action == 'off':
             if time.time() - self.last_action_time >= self.default_open_time:
-                return 'turning on' # This state indicates a problem
+                return 'on' # This state indicates a problem
             else:
                 return 'on'
         else:

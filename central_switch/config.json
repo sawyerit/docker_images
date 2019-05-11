@@ -2,7 +2,6 @@
 	"config": {
 		"use_auth": true,
 		"use_alerts": false,
-		"use_openhab": false,
 		"use_gdrive": false,
 		"version": "0.1.0"
 	},
@@ -19,15 +18,7 @@
 		},
 		"pushbullet": {
 			"access_token": "<ACCES TOKEN>"
-		},
-		"pushover": {
-			"user_key": "<PUSHOVER USER KEY>",
-			"api_key": "<PUSHOVER API TOKEN/KEY>"
 		}
-	},
-	"openhab": {
-		"server": "",
-		"port": ""
 	},
 	"site": {
 		"port": 8000,
@@ -43,7 +34,6 @@
 			"state_pin_closed_value": 0,
 			"approx_time_to_close": 10,
 			"approx_time_to_open": 10,
-			"openhab_name": "main_door",
 			"pi_ip": "192.168.1.98"
 		},
 		"garagebackdoor": {
@@ -51,7 +41,6 @@
 			"auto_door": "False",
 			"state_pin": 27,
 			"state_pin_closed_value": 0,
-			"openhab_name": "back_door",
 			"pi_ip": "192.168.1.98"
 		}
 	},

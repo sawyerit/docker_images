@@ -14,7 +14,7 @@ import urllib
 from door import Door
 from zone import Zone
 from handlers import ClickHandler, ConfigHandlerDoor, ConfigHandlerZone, InfoHandler
-from handlers import StatusHandler, UpdateHandler, UptimeHandler
+from handlers import StatusHandler, UpdateHandlerDoor, UpdateHandlerZone, UptimeHandler
 from logger import CSLogger
 
 from twisted.internet import task
@@ -53,7 +53,8 @@ class Controller(object):
         self.server_logger.log(["CentralStation", "server controller started"])
         # setup the configuration
         self.config = config
-        self.updateHandler = UpdateHandler(self)
+        self.updateHandlerDoor = UpdateHandlerDoor(self)
+        self.updateHandlerZone = UpdateHandlerZone(self)
 
         self.doors = [Door(n, c, self.garage_logger) for (n, c) in config['doors'].items()]
         for door in self.doors:
@@ -64,6 +65,7 @@ class Controller(object):
         print(len(self.zones))
         for zone in self.zones:
             zone.last_run_time = time.time()
+            zone.state = 'off'
 
         self.use_alerts = config['config']['use_alerts']
         self.alert_type = config['alerts']['alert_type']
@@ -76,9 +78,6 @@ class Controller(object):
         elif self.alert_type == 'pushbullet':
             self.pushbullet_access_token = config['alerts']['pushbullet']['access_token']
             syslog.syslog("we are using Pushbullet")
-        elif self.alert_type == 'pushover':
-            self.pushover_user_key = config['alerts']['pushover']['user_key']
-            syslog.syslog("we are using Pushover")
         else:
             self.alert_type = None
             syslog.syslog("No alerts configured")
@@ -92,8 +91,6 @@ class Controller(object):
                 door.last_state = new_state
                 door.last_state_time = time.time()
                 self.updateHandler.handle_updates()
-                if self.config['config']['use_openhab'] and (new_state == "open" or new_state == "closed"):
-                    self.update_openhab(door.openhab_name, new_state)
 
             if new_state == 'open' and not door.msg_sent and time.time() - door.open_time >= self.ttw:
                 if self.use_alerts:
@@ -104,8 +101,6 @@ class Controller(object):
                         self.send_email(title, message)
                     elif self.alert_type == 'pushbullet':
                         self.send_pushbullet(door, title, message)
-                    elif self.alert_type == 'pushover':
-                        self.send_pushover(door, title, message)
                     door.msg_sent = True
 
             if new_state == 'closed':
@@ -118,8 +113,6 @@ class Controller(object):
                             self.send_email(title, message)
                         elif self.alert_type == 'pushbullet':
                             self.send_pushbullet(door, title, message)
-                        elif self.alert_type == 'pushover':
-                            self.send_pushover(door, title, message)
                 door.open_time = time.time()
                 door.msg_sent = False
 
@@ -156,32 +149,19 @@ class Controller(object):
         print(response)
         door.pb_iden = json.loads(response)['iden']
 
-    def send_pushover(self, door, title, message):
-        syslog.syslog("Sending Pushover message")
-        config = self.config['alerts']['pushover']
-        conn = httplib.HTTPSConnection("api.pushover.net:443")
-        conn.request("POST", "/1/messages.json",
-                urllib.urlencode({
-                    "token": config['api_key'],
-                    "user": config['user_key'],
-                    "title": title,
-                    "message": message,
-                }), {"Content-type": "application/x-www-form-urlencoded"})
-        conn.getresponse()
-
-    def update_openhab(self, item, state):
-        syslog.syslog("Updating openhab")
-        config = self.config['openhab']
-        conn = httplib.HTTPConnection("%s:%s" % (config['server'], config['port']))
-        conn.request("PUT", "/rest/items/%s/state" % item, state)
-        conn.getresponse()
-
     def toggle(self, doorId):
         """ Click Handler invokes this controller action to toggle the selected door """
         door = self.get_door_byid(doorId)
         if door and door.is_auto_door:
             door.toggle_relay()
             return
+
+    def toggle_zone(self, zId):
+        """ Click Handler invokes this controller action to toggle the selected zone """        
+        zone = next((x for x in self.zones if x.id == zId), None)
+        if zone:
+            zone.toggle_relay()
+            return            
 
     def get_updates(self, lastupdate):
         updates = []
@@ -200,6 +180,7 @@ class Controller(object):
         root = File('www')
         root.putChild('st', StatusHandler(self))
         root.putChild('upd', self.updateHandler)
+        root.putChild('upd-zone', self.updateHandler)
         root.putChild('cfg-door', ConfigHandlerDoor(self))
         root.putChild('cfg-zone', ConfigHandlerZone(self))
         root.putChild('upt', UptimeHandler(self))

@@ -25,6 +25,23 @@
   background-position: 2px -0px;
 }
 
+.sprinkler {
+  background-image: url("../img/sprinkler.png");
+  margin: auto;
+  display:block;
+  width:64px;
+  height:64px;
+}
+
+.on-sprinkler{
+  background-image: url("../img/sprinkler_on.gif");
+}
+
+.off-sprinkler{
+  background-image: url("../img/sprinkler.png");
+}
+
+
 .navigate {
   cursor: pointer;
 }

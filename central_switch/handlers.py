@@ -19,12 +19,17 @@ class ClickHandler(Resource):
         self.controller = controller
 
     def render(self, request):
-        cur_door = self.controller.get_door_byid(request.args['id'][0])
-        if cur_door:
-            self.controller.toggle(cur_door.id)
-            return 'OK'
+
+        if request.args['type'] == 'door':
+            cur_door = self.controller.get_door_byid(request.args['id'][0])
+            if cur_door:
+                self.controller.toggle(cur_door.id)
+                return 'OK'
+            else:
+                return 'NOT FOUND'
         else:
-            return 'NOT FOUND'
+            self.controller.toggle_zone(request.args['id'][0])
+        
 
 class StatusHandler(Resource):
     """ 
@@ -85,7 +90,7 @@ class ConfigHandlerZone(Resource):
 
     def render(self, request):
         request.setHeader('Content-Type', 'application/json')
-        return json.dumps([(z.id, z.name, z.last_run_time)
+        return json.dumps([(z.id, z.name, z.last_run_time, z.state)
                            for z in self.controller.zones])                           
 
 class UptimeHandler(Resource):
@@ -104,7 +109,7 @@ class UptimeHandler(Resource):
             uptime_string = str(timedelta(seconds=uptime_seconds))
         return json.dumps("Uptime: " + uptime_string)
 
-class UpdateHandler(Resource):
+class UpdateHandlerDoor(Resource):
     """
     Handles updates to the state of the doors
     """
@@ -163,3 +168,5 @@ class UpdateHandler(Resource):
 
         # tell the client we're not done yet
         return server.NOT_DONE_YET
+
+class UpdateHandlerZone(Resource):

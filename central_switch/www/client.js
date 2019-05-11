@@ -46,15 +46,15 @@ $.ajax({
     url: "cfg-zone",
     success: function (data) {
         $("#zonelist").append(data.map(zone => {
-            var nextState = zone[2] == 'on' ? 'off' : 'off';
+            var nextState = zone[3] == 'on' ? 'off' : 'on';
             var formattedState = formatState(zone[1], zone[2]);
 
             return `<div id="${zone[0]}" class="card text-center">
-            <div class="card-header"><div id="${zone[0]}-door" class="garage closed-garage"></div></div>
+            <div class="card-header"><div id="${zone[0]}-zone" class="sprinkler ${zone[3]}-sprinkler"></div></div>
             <div class="card-block">
             <h4 class="card-title text-center">${zone[1]}</h4>
             <p class="card-text">${formattedState}</p>
-            <button id="${zone[0]}-door-button" type="button" btn " onclick="zoneclick('${zone[0]}')">Click to ${nextState.toUpperCase()}</a>
+            <button id="${zone[0]}-zone-button" type="button" btn " onclick="zoneclick('${zone[0]}')">${nextState.toUpperCase()}</a>
             </div></div>`;
         }));
     },
@@ -108,6 +108,35 @@ function poll() {
                 $("#" + id + "-door").removeClass().addClass("garage " + state + "-garage");
                 let btn = $("#" + id + "-door-button");
                 btn.text("Click to " + oppositeState.toUpperCase());
+            }
+            setTimeout(poll, 1000);
+        },
+        // handle error
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            // try again in 10 seconds if there was a request error
+            console.log("likely no status change since last poll");
+            setTimeout(poll, 10000);
+        },
+        //complete: poll,
+        dataType: "json",
+        timeout: 1000
+    });
+    $.ajax({
+        url: "upd-zone",
+        data: { 'lastupdate': lastupdate },
+        success: function (response, status) {
+            lastupdate = response.timestamp;
+            console.log("last update: " + lastupdate);
+            for (var i = 0; i < response.update.length; i++) {
+                let id = response.update[i][0];
+                let state = response.update[i][1];
+                let time = response.update[i][2];
+                let oppositeState = state == 'on' ? 'off' : 'on';
+
+                $("#" + id + " p").html(formatState(state, time));
+                $("#" + id + "-zone").removeClass().addClass("sprinkler " + state + "-sprinkler");
+                let btn = $("#" + id + "-zone-button");
+                btn.text(oppositeState.toUpperCase());
             }
             setTimeout(poll, 1000);
         },
