@@ -59,6 +59,7 @@ class Zone(object):
         """
         # undo and test this??
         # if self.remote_pi.read(self.relay_pin) == 1:
+        # will always be off on the UI untl this is put back??
         if 0 == 0:
             return 'off'
         elif self.last_action == 'on':

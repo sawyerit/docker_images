@@ -65,7 +65,7 @@ class Controller(object):
         print(len(self.zones))
         for zone in self.zones:
             zone.last_run_time = time.time()
-            zone.state = 'off'
+            zone.last_state = 'unknown'
 
         self.use_alerts = config['config']['use_alerts']
         self.alert_type = config['alerts']['alert_type']
@@ -90,7 +90,7 @@ class Controller(object):
                 door.logger.log([door.id, door.name, door.last_state + '=>' + new_state])
                 door.last_state = new_state
                 door.last_state_time = time.time()
-                self.updateHandler.handle_updates()
+                self.updateHandlerDoor.handle_updates()
 
             if new_state == 'open' and not door.msg_sent and time.time() - door.open_time >= self.ttw:
                 if self.use_alerts:
@@ -115,6 +115,13 @@ class Controller(object):
                             self.send_pushbullet(door, title, message)
                 door.open_time = time.time()
                 door.msg_sent = False
+
+        for zone in self.zones:
+            new_state = zone.get_state()
+            if zone.last_state != new_state:
+                zone.last_state = new_state
+                zone.last_run_time = time.time()
+                self.updateHandlerZone.handle_updates()
 
     def send_email(self, title, message):
         if self.use_smtp:
@@ -171,6 +178,14 @@ class Controller(object):
                 updates.append((d.id, d.last_state, d.last_state_time))
         return updates
 
+    def get_zone_updates(self, lastupdate):
+        updates = []
+        for z in self.zones:
+            # only fire an update ('upd') if there was a status update since the last check
+            if z.last_run_time >= lastupdate:
+                updates.append((z.id, z.last_state, z.last_run_time))
+        return updates
+
     def get_door_byid(self, doorid):
         return next((x for x in self.doors if x.id == doorid), None)
 
@@ -179,8 +194,8 @@ class Controller(object):
         task.LoopingCall(self.status_check).start(0.5)
         root = File('www')
         root.putChild('st', StatusHandler(self))
-        root.putChild('upd', self.updateHandler)
-        root.putChild('upd-zone', self.updateHandler)
+        root.putChild('upd-door', self.updateHandlerDoor)
+        root.putChild('upd-zone', self.updateHandlerZone)
         root.putChild('cfg-door', ConfigHandlerDoor(self))
         root.putChild('cfg-zone', ConfigHandlerZone(self))
         root.putChild('upt', UptimeHandler(self))

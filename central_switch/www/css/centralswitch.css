@@ -26,11 +26,11 @@
 }
 
 .sprinkler {
-  background-image: url("../img/sprinkler.png");
   margin: auto;
   display:block;
   width:64px;
   height:64px;
+  background-size:100%;
 }
 
 .on-sprinkler{

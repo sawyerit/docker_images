@@ -93,7 +93,7 @@ function info() {
 
 function poll() {
     $.ajax({
-        url: "upd",
+        url: "upd-door",
         data: { 'lastupdate': lastupdate },
         success: function (response, status) {
             lastupdate = response.timestamp;
@@ -109,18 +109,19 @@ function poll() {
                 let btn = $("#" + id + "-door-button");
                 btn.text("Click to " + oppositeState.toUpperCase());
             }
-            setTimeout(poll, 1000);
+            setTimeout(poll, 2000);
         },
         // handle error
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             // try again in 10 seconds if there was a request error
-            console.log("likely no status change since last poll");
+            console.log("likely no status change in the door since last poll " + errorThrown);
             setTimeout(poll, 10000);
         },
         //complete: poll,
         dataType: "json",
         timeout: 1000
     });
+    
     $.ajax({
         url: "upd-zone",
         data: { 'lastupdate': lastupdate },
@@ -138,12 +139,12 @@ function poll() {
                 let btn = $("#" + id + "-zone-button");
                 btn.text(oppositeState.toUpperCase());
             }
-            setTimeout(poll, 1000);
+            setTimeout(poll, 2000);
         },
         // handle error
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             // try again in 10 seconds if there was a request error
-            console.log("likely no status change since last poll");
+            console.log("err " + errorThrown);
             setTimeout(poll, 10000);
         },
         //complete: poll,
