@@ -92,65 +92,68 @@ function info() {
 }
 
 function poll() {
-    $.ajax({
-        url: "upd-door",
-        data: { 'lastupdate': lastupdate },
-        success: function (response, status) {
-            lastupdate = response.timestamp;
-            console.log("last update: " + lastupdate);
-            for (var i = 0; i < response.update.length; i++) {
-                let id = response.update[i][0];
-                let state = response.update[i][1];
-                let time = response.update[i][2];
-                let oppositeState = state == 'open' ? 'close' : 'open';
+    if ($("h1").text() == "Garages") {
+        $.ajax({
+            url: "upd-door",
+            data: { 'lastupdate': lastupdate },
+            success: function (response, status) {
+                lastupdate = response.timestamp;
+                console.log("last update: " + lastupdate);
+                for (var i = 0; i < response.update.length; i++) {
+                    let id = response.update[i][0];
+                    let state = response.update[i][1];
+                    let time = response.update[i][2];
+                    let oppositeState = state == 'open' ? 'close' : 'open';
 
-                $("#" + id + " p").html(formatState(state, time));
-                $("#" + id + "-door").removeClass().addClass("garage " + state + "-garage");
-                let btn = $("#" + id + "-door-button");
-                btn.text("Click to " + oppositeState.toUpperCase());
-            }
-            setTimeout(poll, 2000);
-        },
-        // handle error
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            // try again in 10 seconds if there was a request error
-            console.log("likely no status change in the door since last poll " + errorThrown);
-            setTimeout(poll, 10000);
-        },
-        //complete: poll,
-        dataType: "json",
-        timeout: 1000
-    });
-    
-    $.ajax({
-        url: "upd-zone",
-        data: { 'lastupdate': lastupdate },
-        success: function (response, status) {
-            lastupdate = response.timestamp;
-            console.log("last update: " + lastupdate);
-            for (var i = 0; i < response.update.length; i++) {
-                let id = response.update[i][0];
-                let state = response.update[i][1];
-                let time = response.update[i][2];
-                let oppositeState = state == 'on' ? 'off' : 'on';
+                    $("#" + id + " p").html(formatState(state, time));
+                    $("#" + id + "-door").removeClass().addClass("garage " + state + "-garage");
+                    let btn = $("#" + id + "-door-button");
+                    btn.text("Click to " + oppositeState.toUpperCase());
+                }
+                setTimeout(poll, 2000);
+            },
+            // handle error
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                // try again in 10 seconds if there was a request error
+                console.log("likely no status change in the door since last poll " + errorThrown);
+                setTimeout(poll, 10000);
+            },
+            //complete: poll,
+            dataType: "json",
+            timeout: 1000
+        });
+    }
+    if ($("h1").text() == "Zones") {
+        $.ajax({
+            url: "upd-zone",
+            data: { 'lastupdate': lastupdate },
+            success: function (response, status) {
+                lastupdate = response.timestamp;
+                console.log("last update: " + lastupdate);
+                for (var i = 0; i < response.update.length; i++) {
+                    let id = response.update[i][0];
+                    let state = response.update[i][1];
+                    let time = response.update[i][2];
+                    let oppositeState = state == 'on' ? 'off' : 'on';
 
-                $("#" + id + " p").html(formatState(state, time));
-                $("#" + id + "-zone").removeClass().addClass("sprinkler " + state + "-sprinkler");
-                let btn = $("#" + id + "-zone-button");
-                btn.text(oppositeState.toUpperCase());
-            }
-            setTimeout(poll, 2000);
-        },
-        // handle error
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            // try again in 10 seconds if there was a request error
-            console.log("err " + errorThrown);
-            setTimeout(poll, 10000);
-        },
-        //complete: poll,
-        dataType: "json",
-        timeout: 1000
-    });
+                    $("#" + id + " p").html(formatState(state, time));
+                    $("#" + id + "-zone").removeClass().addClass("sprinkler " + state + "-sprinkler");
+                    let btn = $("#" + id + "-zone-button");
+                    btn.text(oppositeState.toUpperCase());
+                }
+                setTimeout(poll, 2000);
+            },
+            // handle error
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                // try again in 10 seconds if there was a request error
+                console.log("err " + errorThrown);
+                setTimeout(poll, 10000);
+            },
+            //complete: poll,
+            dataType: "json",
+            timeout: 1000
+        });
+    }
 }
 
 setupNav = () => {
@@ -172,7 +175,7 @@ setupNav = () => {
 };
 
 $(document).ready(() => {
-    uptime();
+    uptime();   
     poll();
     setupNav();
     info();

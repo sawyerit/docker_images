@@ -117,8 +117,9 @@ class Controller(object):
                 door.msg_sent = False
 
         for zone in self.zones:
-            new_state = zone.get_state()
+            new_state = zone.get_state()            
             if zone.last_state != new_state:
+                print("new state: " + new_state)
                 zone.last_state = new_state
                 zone.last_run_time = time.time()
                 self.updateHandlerZone.handle_updates()

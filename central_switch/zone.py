@@ -37,18 +37,19 @@ class Zone(object):
         if state == 'on':
             self.last_action = 'off'
             self.last_action_time = time.time()
+            print("turning zone off")
         elif state == 'off':
             self.last_action = 'on'
             self.last_action_time = time.time()
+            print("turning zone on")
+            time.sleep(10) # todo: don't know if we can pause the thread like this, maybe rather do it on poll?
+            print("turning zone off")
         else:
             self.last_action = None
             self.last_action_time = None
+            print("turning zone off")
 
-        #
-        print("turning zone on")
-        time.sleep(5)
-        print("turning zone off")
-        # undo
+        # put this in the if expression?
         # self.remote_pi.write(self.relay_pin, 0)
         # time.sleep(self.default_open_time) # todo: make open time more dynamic, editable via the web app
         # self.remote_pi.write(self.relay_pin, 1)
@@ -60,16 +61,8 @@ class Zone(object):
         # undo and test this??
         # if self.remote_pi.read(self.relay_pin) == 1:
         # will always be off on the UI untl this is put back??
-        if 0 == 0:
+        if 1 == 1:
             return 'off'
-        elif self.last_action == 'on':
-            if time.time() - self.last_action_time >= self.default_open_time:
-                return 'off'
-        elif self.last_action == 'off':
-            if time.time() - self.last_action_time >= self.default_open_time:
-                return 'on' # This state indicates a problem
-            else:
-                return 'on'
         else:
             return 'on'
 

@@ -182,7 +182,7 @@ class UpdateHandlerZone(Resource):
 
     def handle_updates(self):
         for request in self.delayed_requests:
-            updates = self.controller.get_updates(request.lastupdate)
+            updates = self.controller.get_zone_updates(request.lastupdate)
             if updates != []:
                 self.send_updates(request, updates)
                 self.delayed_requests.remove(request)
@@ -218,7 +218,7 @@ class UpdateHandlerZone(Resource):
             #print "request received " + str(request.lastupdate)
 
         # Can we accommodate this request now?
-        updates = self.controller.get_updates(request.lastupdate)
+        updates = self.controller.get_zone_updates(request.lastupdate)
         if updates != []:
             print('doing the update')
             return self.format_updates(request, updates)
