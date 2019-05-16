@@ -1,5 +1,6 @@
 """ This module contains the irrigation zpne object and its methods """
 import time
+import random
 
 # import pigpio
 
@@ -59,9 +60,8 @@ class Zone(object):
         and returns the state/status.
         """
         # undo and test this??
-        # if self.remote_pi.read(self.relay_pin) == 1:
-        # will always be off on the UI untl this is put back??
-        if 1 == 1:
+        # if self.remote_pi.read(self.relay_pin) == 1:        
+        if 1 == random.randint(0,100):
             return 'off'
         else:
             return 'on'

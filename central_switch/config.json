@@ -47,7 +47,7 @@
 	"irrigation": {
 		"zones": {
 			"1": {
-				"name": "front-east",
+				"name": "front-door",
 				"relay_pin": 23,
 				"default_open_time": 5,
 				"pi_ip": "192.168.1.XX"
@@ -59,7 +59,7 @@
 				"pi_ip": "192.168.1.XX"
 			},
 			"3": {
-				"name": "front-sidewalk",
+				"name": "front-street",
 				"relay_pin": 23,
 				"default_open_time": 5,
 				"pi_ip": "192.168.1.XX"
@@ -71,25 +71,25 @@
 				"pi_ip": "192.168.1.XX"
 			},
 			"5": {
-				"name": "back-rotators",
+				"name": "garden-rotators",
 				"relay_pin": 23,
 				"default_open_time": 5,
 				"pi_ip": "192.168.1.XX"
 			},
 			"6": {
-				"name": "center",
+				"name": "back-east-rotator",
 				"relay_pin": 23,
 				"default_open_time": 5,
 				"pi_ip": "192.168.1.XX"
 			},
 			"7": {
-				"name": "??",
+				"name": "back-middle",
 				"relay_pin": 23,
 				"default_open_time": 5,
 				"pi_ip": "192.168.1.XX"
 			},
 			"8": {
-				"name": "back-west?",
+				"name": "back-west-broken",
 				"relay_pin": 23,
 				"default_open_time": 5,
 				"pi_ip": "192.168.1.XX"
